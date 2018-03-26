@@ -4,7 +4,7 @@
 Plan:
     1) utils/io/AbstractCSVReader.cpp
     2) utils/io/SlowCSVReader.cpp
-    3) utils/io/FastCSVReader.cpp (*)
+    3) utils/io/FastCSVReader.cpp 
     4) gradient_boosting/binarization/BinContainer.cpp
     5) gradient_boosting/binarization/creators/BinCreator.cpp
     6) gradient_boosting/binarization/creators/BinCreatorByStatistics.cpp
