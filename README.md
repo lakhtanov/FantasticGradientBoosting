@@ -1,2 +1,2 @@
 # FantasticGradientBoosting
-# Authtors: rialeksandrov lakhatanov
+# Authtors: rialeksandrov lakhtanov
