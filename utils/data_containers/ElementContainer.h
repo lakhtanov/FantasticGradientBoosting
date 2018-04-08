@@ -5,7 +5,6 @@
 
 namespace utils {
     namespace  data_containers {
-
         class ElementContainer {
         public:
             enum class DataType {Double, String, LongInteger};
@@ -16,11 +15,11 @@ namespace utils {
             std::string GetString();
 
         private:
-            std::string RawData;
-            DataType Type;
+            std::string raw_data_;
+            DataType type_;
         };
-    }
-}
+    } // namespace data_containers
+} // namespace utils
 
 
 #endif //FANTASTICGRADIENTBOOSTING_ELEMENTCONTAINER_H
