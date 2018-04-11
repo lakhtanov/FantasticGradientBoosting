@@ -4,7 +4,6 @@
 #include <string>
 
 namespace utils {
-
 namespace  data_containers {
 
 class ElementContainer {
