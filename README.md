@@ -9,7 +9,7 @@
 
 `git clone https://github.com/lakhtanov/FantasticGradientBoosting`
 
-2. Собрать утилиту:
+2. Собрать утилиту при помощи `cmake`:
 
 `cmake CMakeLists.txt`
 
