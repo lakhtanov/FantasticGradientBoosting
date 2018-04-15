@@ -17,21 +17,29 @@ ElementContainer::ElementContainer(const std::string &str)
   }
 }
 
-bool ElementContainer::IsDouble() {
+bool ElementContainer::IsDouble() const {
   return type_ == DataType::Double;
 }
 
-bool ElementContainer::IsString() {
+bool ElementContainer::IsString() const {
   return type_ == DataType::String;
 }
 
-double ElementContainer::GetDouble() {
+double ElementContainer::GetDouble() const {
   assert(IsDouble());
   return std::stod(raw_data_);
 }
 
-std::string ElementContainer::GetString() {
+std::string ElementContainer::GetString() const {
   return raw_data_;
+}
+
+ElementContainer::DataType ElementContainer::GetDataType() const {
+  return type_;
+}
+
+void ElementContainer::ChangeDataType(const ElementContainer::DataType& type) {
+  type_ = type;
 }
 
 }  // namespace data_containers

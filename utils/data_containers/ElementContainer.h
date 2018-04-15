@@ -4,18 +4,20 @@
 #include <string>
 
 namespace utils {
-namespace  data_containers {
+namespace data_containers {
 
 class ElementContainer {
  public:
   enum class DataType {Double, String, LongInteger};
   explicit ElementContainer(const std::string& str);
-  bool IsDouble();
-  bool IsString();
-  double GetDouble();
-  std::string GetString();
-
+  bool IsDouble() const;
+  bool IsString() const;
+  double GetDouble() const;
+  std::string GetString() const;
  private:
+  DataType GetDataType() const;
+  void ChangeDataType(const DataType& type);
+  friend class DataValidator;
   std::string raw_data_;
   DataType type_;
 };
