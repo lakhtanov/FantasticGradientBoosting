@@ -11,6 +11,7 @@ namespace io {
 class SimpleCSVReader final : public CSVReaderBase {
  public:
   explicit SimpleCSVReader(const std::string& file_name);
+  SimpleCSVReader(const std::string& file_name, bool header);
   data_containers::DataContainer ReadFile() const final;
 };
 

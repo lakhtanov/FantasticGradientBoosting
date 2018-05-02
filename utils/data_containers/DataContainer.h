@@ -15,8 +15,9 @@ namespace data_containers {
 
 class DataContainer {
  public:
-  DataContainer(const std::vector<std::string> &names,
-                const std::vector<std::vector<std::string>> &table);
+  DataContainer(const std::vector<std::vector<std::string>>& table);
+  DataContainer(const std::vector<std::string>& names,
+                const std::vector<std::vector<std::string>>& table);
 
  private:
   void Validation();
@@ -30,9 +31,9 @@ class DataContainer {
 class DataValidator {
  private:
   friend DataContainer;
-  explicit DataValidator(const ElementContainer &el);
-  void Merge(const ElementContainer &el);
-  void Apply(ElementContainer* el) const;
+  explicit DataValidator(const ElementContainer& el);
+  void Merge(const ElementContainer& el);
+  void Apply(ElementContainer* el);
   ElementContainer::DataType data_type_;
 };
 

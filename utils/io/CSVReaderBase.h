@@ -10,10 +10,11 @@ namespace io {
 
 class CSVReaderBase {
  public:
-  explicit CSVReaderBase(const std::string& file_name);
+  explicit CSVReaderBase(const std::string& file_name, bool header);
   virtual data_containers::DataContainer ReadFile() const = 0;
  protected:
   const std::string file_name_;
+  const bool header_;
 };
 
 }  // namespace io

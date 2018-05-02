@@ -1,8 +1,15 @@
 #include "utils/data_containers/DataContainer.h"
 
+#include <cassert>
 
 namespace utils {
 namespace data_containers {
+
+
+DataContainer::DataContainer(const std::vector<std::vector<std::string>> &table)
+    : DataContainer(std::vector<std::string>(table.front().size()), table)
+{
+}
 
 DataContainer::DataContainer(const std::vector<std::string> &names,
                              const std::vector<std::vector<std::string>> &table)
@@ -31,7 +38,7 @@ void DataContainer::Validation() {
       validator.Merge(data_[row][column]);
     }
     for (size_t row = 0; row < rows_; ++row) {
-      validator.Apply(data_[row][column]);
+      validator.Apply(&data_[row][column]);
     }
   }
   validated_ = true;
@@ -48,7 +55,7 @@ void DataValidator::Merge(const ElementContainer& el) {
   }
 }
 
-void DataValidator::Apply(ElementContainer* el) const {
+void DataValidator::Apply(ElementContainer* el) {
   el->ChangeDataType(data_type_);
 }
 

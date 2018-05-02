@@ -23,19 +23,31 @@ std::vector<std::string> split(const std::string &str, char token = ',') {
 }
 
 SimpleCSVReader::SimpleCSVReader(const std::string &file_name)
-    : CSVReaderBase(file_name) {
+    : CSVReaderBase(file_name, true) {
+}
+
+SimpleCSVReader::SimpleCSVReader(const std::string &file_name, bool header)
+    : CSVReaderBase(file_name, header) {
 }
 
 data_containers::DataContainer SimpleCSVReader::ReadFile() const {
   std::ifstream in(file_name_);
   std::string str;
-  std::getline(in, str);
-  const std::vector<std::string> names = split(str);
-  std::vector<std::vector<std::string>> raw_data;
-  while (std::getline(in, str)) {
-    raw_data.push_back(split(str));
+  if (header_) {
+    std::getline(in, str);
+    const std::vector<std::string> names = split(str);
+    std::vector<std::vector<std::string>> raw_data;
+    while (std::getline(in, str)) {
+      raw_data.push_back(split(str));
+    }
+    return data_containers::DataContainer(names, raw_data);
+  } else {
+    std::vector<std::vector<std::string>> raw_data;
+    while (std::getline(in, str)) {
+      raw_data.push_back(split(str));
+    }
+    return data_containers::DataContainer(raw_data);
   }
-  return data_containers::DataContainer(names, raw_data);
 }
 
 }  // namespace io
