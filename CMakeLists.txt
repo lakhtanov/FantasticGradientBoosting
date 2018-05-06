@@ -22,6 +22,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 		gradient_boosting/GradientBoosting.cpp
+		gradient_boosting/binarization/BinCreator.cpp
 		gradient_boosting/binarization/BinCreatorByAbsoluteValue.cpp
 		gradient_boosting/binarization/BinCreatorByStatistics.cpp
 		gradient_boosting/config/GradientBoostingConfig.cpp
