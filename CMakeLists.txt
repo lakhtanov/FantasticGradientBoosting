@@ -7,9 +7,10 @@ SET(BASEPATH "${CMAKE_SOURCE_DIR}")
 INCLUDE_DIRECTORIES("${BASEPATH}")
 set(HEADER_FILES
 		gradient_boosting/GradientBoosting.h
-		gradient_boosting/binarization/BinCreator.h
-		gradient_boosting/binarization/BinCreatorByAbsoluteValue.h
-		gradient_boosting/binarization/BinCreatorByStatistics.h
+		gradient_boosting/binarization/ThresholdContainer.h
+		gradient_boosting/binarization/ThresholdCreator.h
+		gradient_boosting/binarization/ThresholdCreatorByValue.h
+		gradient_boosting/binarization/ThresholdCreatorByStatistics.h
 		gradient_boosting/config/GradientBoostingConfig.h
 		gradient_boosting/loss_functions/GradientBoostingLossFunction.h
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h
@@ -22,9 +23,10 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
 		gradient_boosting/GradientBoosting.cpp
-		gradient_boosting/binarization/BinCreator.cpp
-		gradient_boosting/binarization/BinCreatorByAbsoluteValue.cpp
-		gradient_boosting/binarization/BinCreatorByStatistics.cpp
+		gradient_boosting/binarization/ThresholdContainer.cpp
+		gradient_boosting/binarization/ThresholdCreator.cpp
+		gradient_boosting/binarization/ThresholdCreatorByValue.cpp
+		gradient_boosting/binarization/ThresholdCreatorByStatistics.cpp
 		gradient_boosting/config/GradientBoostingConfig.cpp
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.cpp
 		gradient_boosting/trees/GradientBoostingTreeOblivious.cpp
