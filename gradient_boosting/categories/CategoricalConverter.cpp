@@ -17,7 +17,7 @@ CategoricalConverter::CategoricalConverter(const vector<string>& features,
   if (class_ids.empty()) {
     default_probability_ = 0.5;
   } else {
-    size_t number_of_classes = (*std::max_element(class_ids.begin(), class_ids.end())) + 1;
+    const size_t number_of_classes = (*std::max_element(class_ids.begin(), class_ids.end())) + 1;
     assert(number_of_classes <= 2 && features.size() == class_ids.size());
     features_count_.resize(container_.Size());
     conversion_result_.resize(container_.Size());
