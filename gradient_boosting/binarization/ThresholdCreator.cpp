@@ -12,7 +12,7 @@ ThresholdCreator::ThresholdCreator(size_t num_thresholds)
 vector<double> ThresholdCreator::CreateThresholds(
     const ThresholdCreator& threshold_creator,
     const std::vector<double>& features) {
-  return threshold_creator.CreateThresholds_(features);
+  return threshold_creator.CreateThresholds(features);
 }
 
 }  // namespace binarization

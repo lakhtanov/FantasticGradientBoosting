@@ -8,7 +8,7 @@ namespace binarization {
 
 using std::vector;
 
-vector<double> ThresholdCreatorByValue::CreateThresholds_(
+vector<double> ThresholdCreatorByValue::CreateThresholds(
     const vector<double>& features) const {
   if (features.empty() || !num_thresholds_) {
     return vector<double>();

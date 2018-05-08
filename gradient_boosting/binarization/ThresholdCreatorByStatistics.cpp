@@ -8,19 +8,19 @@ namespace binarization {
 
 using std::vector;
 
-vector<double> ThresholdCreatorByStatistics::CreateThresholds_(
+vector<double> ThresholdCreatorByStatistics::CreateThresholds(
     const vector<double>& features) const {
   if (features.empty() || !num_thresholds_) {
     return vector<double>();
   }
 
 
-  const double delta_statistics = 100.0 / (num_thresholds_ + 1);
+  const double delta_statistics = 1.0 / (num_thresholds_ + 1);
   std::set<size_t> unique_threshold_feature_positions;
   for (size_t i = 0; i < num_thresholds_; ++i) {
     const double threshold_statistics = (i + 1) * delta_statistics;
     const size_t feature_position =
-        static_cast<size_t>(threshold_statistics / 100 * features.size());
+        static_cast<size_t>(threshold_statistics * features.size());
     unique_threshold_feature_positions.insert(feature_position);
   }
 

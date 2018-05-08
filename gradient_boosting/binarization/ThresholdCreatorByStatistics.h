@@ -12,7 +12,7 @@ class ThresholdCreatorByStatistics : public ThresholdCreator {
  public:
   using ThresholdCreator::ThresholdCreator;
  protected:
-  std::vector<double> CreateThresholds_(
+  std::vector<double> CreateThresholds(
       const std::vector<double>& features) const override;
 };
 

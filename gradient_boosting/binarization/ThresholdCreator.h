@@ -15,7 +15,7 @@ class ThresholdCreator {
       const ThresholdCreator& threshold_creator,
       const std::vector<double>& features);
  protected:
-  virtual std::vector<double> CreateThresholds_(
+  virtual std::vector<double> CreateThresholds(
       const std::vector<double>& features) const = 0;
   size_t num_thresholds_;
 };
