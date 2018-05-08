@@ -3,19 +3,24 @@
 namespace gradient_boosting {
 namespace categories {
 
-CategoricalContainer::CategoricalContainer(const std::vector<std::string>& features) {
+using std::string;
+
+CategoricalContainer::CategoricalContainer(const std::vector<string>& features) {
   for (const auto& feature_value : features) {
-    GetId(feature_value);
+    if (!table_.count(feature_value)) {
+      const size_t next_id = table_.size();
+      table_[feature_value] = next_id;
+    }
   }
 }
 
-size_t CategoricalContainer::GetId(const std::string& feature_value) {
-  if (!table_.count(feature_value)) {
-    size_t next_id = table_.size();
-    table_[feature_value] = next_id;
+std::pair<bool, size_t> CategoricalContainer::GetId(const string& feature_value) const {
+  if (table_.count(feature_value)) {
+    return {true, table_.at(feature_value)};
+  } else {
+    return {false, 0};
   }
-  return table_[feature_value];
-}
+};
 
 size_t CategoricalContainer::Size() const {
   return table_.size();

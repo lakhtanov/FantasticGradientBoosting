@@ -11,9 +11,9 @@ set(HEADER_FILES
 		gradient_boosting/binarization/ThresholdCreator.h
 		gradient_boosting/binarization/ThresholdCreatorByValue.h
 		gradient_boosting/binarization/ThresholdCreatorByStatistics.h
-		gradient_boosting/config/GradientBoostingConfig.h
 		gradient_boosting/categories/CategoricalContainer.h
 		gradient_boosting/categories/CategoricalConverter.h
+		gradient_boosting/config/GradientBoostingConfig.h
 		gradient_boosting/loss_functions/GradientBoostingLossFunction.h
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h
 		gradient_boosting/trees/GradientBoostingTree.h
@@ -29,9 +29,9 @@ set(SOURCE_FILES
 		gradient_boosting/binarization/ThresholdCreator.cpp
 		gradient_boosting/binarization/ThresholdCreatorByValue.cpp
 		gradient_boosting/binarization/ThresholdCreatorByStatistics.cpp
-		gradient_boosting/config/GradientBoostingConfig.cpp
 		gradient_boosting/categories/CategoricalContainer.cpp
 		gradient_boosting/categories/CategoricalConverter.cpp
+		gradient_boosting/config/GradientBoostingConfig.cpp
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.cpp
 		gradient_boosting/trees/GradientBoostingTreeOblivious.cpp
 		gradient_boosting_app.cpp

@@ -7,20 +7,24 @@
 namespace gradient_boosting {
 namespace categories {
 
-CategoricalConverter::CategoricalConverter(const std::vector<std::string>& features,
-                                           const std::vector<size_t>& class_ids)
+using std::string;
+using std::vector;
+
+CategoricalConverter::CategoricalConverter(const vector<string>& features,
+                                           const vector<size_t>& class_ids)
     : container_(features)
     , lambda_(log(features.size() + 2)) {
-  if (!class_ids.empty()) {
-    size_t number_of_classes = *std::max_element(class_ids.begin(), class_ids.end());
-    number_of_classes += 1;
+  if (class_ids.empty()) {
+    default_probability_ = 0.5;
+  } else {
+    size_t number_of_classes = (*std::max_element(class_ids.begin(), class_ids.end())) + 1;
     assert(number_of_classes <= 2 && features.size() == class_ids.size());
     features_count_.resize(container_.Size());
     conversion_result_.resize(container_.Size());
     for (size_t index = 0; index < features.size(); ++index) {
-      const auto &feature_value = features[index];
-      size_t id = container_.GetId(feature_value);
-      features_count_[id]++;
+      const auto result = container_.GetId(features[index]);
+      const size_t id = result.second;
+      ++features_count_[id];
       class_sum_[id] += class_ids[index];
       default_probability_+= class_ids[index];
       conversion_result_[index] = Convert(id);
@@ -29,14 +33,14 @@ CategoricalConverter::CategoricalConverter(const std::vector<std::string>& featu
   }
 }
 
-std::vector<double> CategoricalConverter::GetConversionResult() const {
+vector<double> CategoricalConverter::GetConversionResult() const {
   return conversion_result_;
 }
 
-double CategoricalConverter::Convert(const std::string& feature_value) {
-  size_t id = container_.GetId(feature_value);
-  if (id < class_sum_.size()) {
-    return Convert(id);
+double CategoricalConverter::Convert(const string& feature_value) const {
+  const auto result = container_.GetId(feature_value);
+  if (result.first) {
+    return Convert(result.second);
   } else {
     return default_probability_;
   }
