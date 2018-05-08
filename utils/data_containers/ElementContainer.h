@@ -8,7 +8,7 @@ namespace data_containers {
 
 class ElementContainer {
  public:
-  enum class DataType {Double, String, LongInteger};
+  enum class DataType {Double, String};
   explicit ElementContainer(const std::string& str);
   bool IsDouble() const;
   bool IsString() const;
