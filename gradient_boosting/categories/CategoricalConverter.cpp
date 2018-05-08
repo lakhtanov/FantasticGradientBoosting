@@ -16,21 +16,21 @@ CategoricalConverter::CategoricalConverter(const std::vector<std::string>& featu
     number_of_classes += 1;
     assert(number_of_classes <= 2 && features.size() == class_ids.size());
     features_count_.resize(container_.Size());
-    convertion_result_.resize(container_.Size());
+    conversion_result_.resize(container_.Size());
     for (size_t index = 0; index < features.size(); ++index) {
       const auto &feature_value = features[index];
       size_t id = container_.GetId(feature_value);
       features_count_[id]++;
       class_sum_[id] += class_ids[index];
       default_probability_+= class_ids[index];
-      convertion_result_[index] = Convert(id);
+      conversion_result_[index] = Convert(id);
     }
     default_probability_ /= class_ids.size();
   }
 }
 
-std::vector<double> CategoricalConverter::GetConvertionResult() const {
-  return convertion_result_;
+std::vector<double> CategoricalConverter::GetConversionResult() const {
+  return conversion_result_;
 }
 
 double CategoricalConverter::Convert(const std::string& feature_value) {

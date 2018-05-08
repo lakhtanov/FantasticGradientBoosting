@@ -4,7 +4,7 @@ namespace gradient_boosting {
 namespace categories {
 
 CategoricalContainer::CategoricalContainer(const std::vector<std::string>& features) {
-  for(const auto& feature_value: features) {
+  for (const auto& feature_value : features) {
     GetId(feature_value);
   }
 }
