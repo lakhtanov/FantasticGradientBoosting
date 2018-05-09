@@ -17,10 +17,10 @@ class CategoricalConverter {
   double Convert(const std::string& feature_value) const;
  private:
   double Convert(size_t id) const;
-  
+
   double default_probability_;
   std::vector<size_t> class_sum_;
-  CategoricalContainer container_;
+  const CategoricalContainer container_;
   std::vector<double> conversion_result_;
   std::vector<size_t> features_count_;
   const double lambda_;

@@ -29,7 +29,7 @@ CategoricalConverter::CategoricalConverter(const vector<string>& features,
       default_probability_+= class_ids[index];
       conversion_result_[index] = Convert(id);
     }
-    default_probability_ /= class_ids.size();
+    default_probability_ = (default_probability_ + lambda_ / 2.0) / (class_ids.size() + lambda_);
   }
 }
 
