@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -7,9 +8,16 @@
 #include "gradient_boosting/binarization/ThresholdCreator.h"
 #include "gradient_boosting/binarization/ThresholdCreatorByValue.h"
 #include "gradient_boosting/binarization/ThresholdCreatorByStatistics.h"
+#include "gradient_boosting/config/GradientBoostingConfig.h"
 #include "utils/data_containers/ElementContainer.h"
 
+#include "third_party/json/single_include/nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
+
 void TestElementContainer();
+void TestJSONReadPrint();
 void TestThresholdContainer();
 void TestThresholdCreator(
     const gradient_boosting::binarization::ThresholdCreator& creator,
@@ -17,10 +25,24 @@ void TestThresholdCreator(
     const std::string& name);
 void TestThresholdCreators();
 
-int main() {
+int main(int argc,  char** argv) {
   TestElementContainer();
+  TestJSONReadPrint();
   TestThresholdContainer();
   TestThresholdCreators();
+  if (argc <= 1) {
+    std::cout << "JSON path was not specified" << std::endl;
+    return 0;
+  }
+  std::string path(argv[1]);
+  std::ifstream in(path);
+  json config;
+  in >> config;
+  gradient_boosting::config::GradientBoostingConfig gb_config(config);
+  std::cout << "Achtung working json reading to config : "
+            << gb_config.GetNumberOfStatisticsThresholds() << " "
+            << gb_config.GetNumberOfValueThresholds() << std::endl;
+  return 0;
 }
 
 void TestElementContainer() {
@@ -33,6 +55,26 @@ void TestElementContainer() {
   std::cout << std::fixed;
   std::cout << el1.IsDouble() << " " << el2.IsDouble()
       << " "<< el2.GetDouble() << std::endl;
+}
+
+void TestJSONReadPrint() {
+  using gradient_boosting::config::GradientBoostingConfig;
+  json j2 = {
+      {"Verbose", "v1"},
+      {"BoostingConfig",
+          {
+              {"NumberOfValueThresholds", 10},
+              {"NumberOfStatisticsThresholds", 20},
+              {"LossFunction", "MSE"}
+          }
+      }
+  };
+  std::cout << j2.dump(4) << std::endl;
+
+  GradientBoostingConfig config(j2);
+  std::cout << config.GetNumberOfValueThresholds() << " "
+            << config.GetNumberOfStatisticsThresholds() << std::endl;
+
 }
 
 void TestThresholdContainer() {
