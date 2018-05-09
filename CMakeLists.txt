@@ -32,6 +32,7 @@ set(SOURCE_FILES
 		gradient_boosting/categories/CategoricalContainer.cpp
 		gradient_boosting/categories/CategoricalConverter.cpp
 		gradient_boosting/config/GradientBoostingConfig.cpp
+		gradient_boosting/loss_functions/GradientBoostingLossFunction.cpp
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.cpp
 		gradient_boosting/trees/GradientBoostingTreeOblivious.cpp
 		gradient_boosting_app.cpp
