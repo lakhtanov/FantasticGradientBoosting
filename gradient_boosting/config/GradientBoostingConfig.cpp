@@ -1,53 +1,60 @@
 #include "gradient_boosting/config/GradientBoostingConfig.h"
 
-#include <cassert>
-#include <string>
 
 namespace gradient_boosting {
 namespace config {
 
-using std::string;
 using json = nlohmann::json;
 
+using std::string;
+using std::unordered_map;
+
+using LossFunction = GradientBoostingConfig::LossFunction;
+using Verbose = GradientBoostingConfig::Verbose;
+
 GradientBoostingConfig::GradientBoostingConfig(const json& config)
-    : verbose_(GetVerbose(config))
+    : to_verbose_(GetVerboseMapping())
+    , to_loss_function_(GetLossFunctionMapping())
+    , verbose_(GetVerbose(config))
     , value_thresholds_(GetNumberOfValueThresholds(config))
     , statistics_thresholds_(GetNumberOfStatisticsThresholds(config))
     , loss_function_(GetLossFunction(config))
 {
 }
 
-GradientBoostingConfig::Verbose GradientBoostingConfig::GetVerbose(const json& config) {
-  std::string res = config.at("Verbose");
-  if (res == "v1") {
-    return GradientBoostingConfig::Verbose::v1;
-  }
-  if (res == "v2") {
-    return GradientBoostingConfig::Verbose::v2;
-  }
-  if (res == "v3") {
-    return GradientBoostingConfig::Verbose::v3;
-  }
-  assert(false);
+unordered_map<string, Verbose> GradientBoostingConfig::GetVerboseMapping() const {
+  unordered_map<string, Verbose> res = {
+      {"v1", Verbose::v1},
+      {"v2", Verbose::v2},
+      {"v3", Verbose::v3},
+  };
+  return res;
+};
+
+unordered_map<string, LossFunction> GradientBoostingConfig::GetLossFunctionMapping() const {
+  unordered_map<string, LossFunction> res = {
+      {"MSE", LossFunction::MSE},
+  };
+  return res;
 }
 
-size_t GradientBoostingConfig::GetNumberOfValueThresholds(const json& config) {
+Verbose GradientBoostingConfig::GetVerbose(const json& config) const {
+  return to_verbose_.at(config.at("Verbose"));
+}
+
+size_t GradientBoostingConfig::GetNumberOfValueThresholds(const json& config) const {
   return config.at("BoostingConfig").at("NumberOfValueThresholds");
 }
 
-size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds(const json& config) {
+size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds(const json& config) const {
   return config.at("BoostingConfig").at("NumberOfStatisticsThresholds");
 }
 
-GradientBoostingConfig::LossFunction GradientBoostingConfig::GetLossFunction(const json& config) {
-  std::string res = config.at("BoostingConfig").at("LossFunction");
-  if (res == "MSE") {
-    return GradientBoostingConfig::LossFunction::MSE;
-  }
-  assert(false);
+LossFunction GradientBoostingConfig::GetLossFunction(const json& config) const {
+  return to_loss_function_.at(config.at("BoostingConfig").at("LossFunction"));
 }
 
-GradientBoostingConfig::Verbose GradientBoostingConfig::GetVerbose() const {
+Verbose GradientBoostingConfig::GetVerbose() const {
   return verbose_;
 }
 
@@ -59,7 +66,7 @@ size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds() const {
   return statistics_thresholds_;
 }
 
-GradientBoostingConfig::LossFunction GradientBoostingConfig::GetLossFunction() const {
+LossFunction GradientBoostingConfig::GetLossFunction() const {
   return loss_function_;
 }
 

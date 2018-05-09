@@ -34,11 +34,11 @@ int main(int argc,  char** argv) {
     std::cout << "JSON path was not specified" << std::endl;
     return 0;
   }
-  std::string path(argv[1]);
+  const std::string path(argv[1]);
   std::ifstream in(path);
   json config;
   in >> config;
-  gradient_boosting::config::GradientBoostingConfig gb_config(config);
+  const gradient_boosting::config::GradientBoostingConfig gb_config(config);
   std::cout << "Achtung working json reading to config : "
             << gb_config.GetNumberOfStatisticsThresholds() << " "
             << gb_config.GetNumberOfValueThresholds() << std::endl;
@@ -59,7 +59,7 @@ void TestElementContainer() {
 
 void TestJSONReadPrint() {
   using gradient_boosting::config::GradientBoostingConfig;
-  json j2 = {
+  const json j2 = {
       {"Verbose", "v1"},
       {"BoostingConfig",
           {
@@ -71,7 +71,7 @@ void TestJSONReadPrint() {
   };
   std::cout << j2.dump(4) << std::endl;
 
-  GradientBoostingConfig config(j2);
+  const GradientBoostingConfig config(j2);
   std::cout << config.GetNumberOfValueThresholds() << " "
             << config.GetNumberOfStatisticsThresholds() << std::endl;
 

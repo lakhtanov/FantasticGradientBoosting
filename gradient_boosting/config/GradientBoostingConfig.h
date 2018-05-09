@@ -1,6 +1,9 @@
 #ifndef GRADIENT_BOOSTING_CONFIG_GRADIENTBOOSTINGCONFIG_H_
 #define GRADIENT_BOOSTING_CONFIG_GRADIENTBOOSTINGCONFIG_H_
 
+#include <string>
+#include <unordered_map>
+
 #include "third_party/json/single_include/nlohmann/json.hpp"
 
 namespace gradient_boosting {
@@ -19,10 +22,18 @@ class GradientBoostingConfig {
   size_t GetNumberOfStatisticsThresholds() const;
   LossFunction GetLossFunction() const;
  private:
-  Verbose GetVerbose(const nlohmann::json& config);
-  size_t GetNumberOfValueThresholds(const nlohmann::json& config);
-  size_t GetNumberOfStatisticsThresholds(const nlohmann::json& config);
-  LossFunction GetLossFunction(const nlohmann::json& config);
+  std::unordered_map<std::string, Verbose> GetVerboseMapping() const;
+  std::unordered_map<std::string, LossFunction> GetLossFunctionMapping() const;
+
+  Verbose GetVerbose(const nlohmann::json& config) const;
+  size_t GetNumberOfValueThresholds(const nlohmann::json& config) const;
+  size_t GetNumberOfStatisticsThresholds(const nlohmann::json& config) const;
+  LossFunction GetLossFunction(const nlohmann::json& config) const;
+
+  // These maps should be higher than fields inited by them!
+  // (C++ motherfucker, do you speak it?)
+  const std::unordered_map<std::string, Verbose> to_verbose_;
+  const std::unordered_map<std::string, LossFunction> to_loss_function_;
 
   const Verbose verbose_;
   const size_t value_thresholds_;
