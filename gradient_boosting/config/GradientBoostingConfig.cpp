@@ -19,6 +19,7 @@ GradientBoostingConfig::GradientBoostingConfig(const json& config)
     , value_thresholds_(GetNumberOfValueThresholds(config))
     , statistics_thresholds_(GetNumberOfStatisticsThresholds(config))
     , loss_function_(GetLossFunction(config))
+    , target_value_name_(GetTargetValueName(config))
 {
 }
 // TODO(rialeksandrov) Try to avoid using this function and init map like 'static constexpr'
@@ -50,6 +51,10 @@ size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds(const json& confi
   return config.at("BoostingConfig").at("NumberOfStatisticsThresholds");
 }
 
+std::string GradientBoostingConfig::GetTargetValueName(const json& config) const {
+  return config.at("BoostingConfig").at("TargetValueName");
+}
+
 LossFunction GradientBoostingConfig::GetLossFunction(const json& config) const {
   return to_loss_function_.at(config.at("BoostingConfig").at("LossFunction"));
 }
@@ -64,6 +69,10 @@ size_t GradientBoostingConfig::GetNumberOfValueThresholds() const {
 
 size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds() const {
   return statistics_thresholds_;
+}
+
+string GradientBoostingConfig::GetTargetValueName() const {
+  return target_value_name_;
 }
 
 LossFunction GradientBoostingConfig::GetLossFunction() const {

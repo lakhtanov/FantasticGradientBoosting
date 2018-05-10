@@ -18,6 +18,7 @@ class GradientBoostingConfig {
   Verbose GetVerbose() const;
   size_t GetNumberOfValueThresholds() const;
   size_t GetNumberOfStatisticsThresholds() const;
+  std::string GetTargetValueName() const;
   LossFunction GetLossFunction() const;
  private:
   std::unordered_map<std::string, Verbose> GetVerboseMapping() const;
@@ -26,6 +27,7 @@ class GradientBoostingConfig {
   Verbose GetVerbose(const nlohmann::json& config) const;
   size_t GetNumberOfValueThresholds(const nlohmann::json& config) const;
   size_t GetNumberOfStatisticsThresholds(const nlohmann::json& config) const;
+  std::string GetTargetValueName(const nlohmann::json& config) const;
   LossFunction GetLossFunction(const nlohmann::json& config) const;
 
   // These maps should be higher than fields inited by them!
@@ -36,6 +38,7 @@ class GradientBoostingConfig {
   const Verbose verbose_;
   const size_t value_thresholds_;
   const size_t statistics_thresholds_;
+  const std::string target_value_name_;
   const LossFunction loss_function_;
 };
 
