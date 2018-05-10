@@ -11,6 +11,7 @@ using std::unordered_map;
 
 using LossFunction = GradientBoostingConfig::LossFunction;
 using Verbose = GradientBoostingConfig::Verbose;
+using TaskType = GradientBoostingConfig::TaskType;
 
 GradientBoostingConfig::GradientBoostingConfig(const json& config)
     : to_verbose_(GetVerboseMapping())
@@ -19,6 +20,8 @@ GradientBoostingConfig::GradientBoostingConfig(const json& config)
     , value_thresholds_(GetNumberOfValueThresholds(config))
     , statistics_thresholds_(GetNumberOfStatisticsThresholds(config))
     , loss_function_(GetLossFunction(config))
+    , target_value_name_(GetTargetValueName(config))
+    , task_type_(GetTaskType(config))
 {
 }
 // TODO(rialeksandrov) Try to avoid using this function and init map like 'static constexpr'
@@ -50,6 +53,15 @@ size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds(const json& confi
   return config.at("BoostingConfig").at("NumberOfStatisticsThresholds");
 }
 
+std::string GradientBoostingConfig::GetTargetValueName(const json& config) const {
+  return config.at("BoostingConfig").at("TargetValueName");
+}
+
+TaskType GradientBoostingConfig::GetTaskType(const json& config) const {
+  return config.at("BoostingConfig").at("TaskType");
+}
+
+
 LossFunction GradientBoostingConfig::GetLossFunction(const json& config) const {
   return to_loss_function_.at(config.at("BoostingConfig").at("LossFunction"));
 }
@@ -66,8 +78,16 @@ size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds() const {
   return statistics_thresholds_;
 }
 
+string GradientBoostingConfig::GetTargetValueName() const {
+  return target_value_name_;
+}
+
 LossFunction GradientBoostingConfig::GetLossFunction() const {
   return loss_function_;
+}
+
+TaskType GradientBoostingConfig::GetTaskType() const {
+  return task_type_;
 }
 
 }  // namespace config

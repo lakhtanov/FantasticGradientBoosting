@@ -5,14 +5,16 @@
 namespace utils {
 namespace data_containers {
 
+using std::string;
+using std::vector;
 
-DataContainer::DataContainer(const std::vector<std::vector<std::string>> &table)
-    : DataContainer(std::vector<std::string>(table.front().size()), table)
+DataContainer::DataContainer(const vector<vector<string>> &table)
+    : DataContainer(vector<string>(table.front().size()), table)
 {
 }
 
-DataContainer::DataContainer(const std::vector<std::string> &names,
-                             const std::vector<std::vector<std::string>> &table)
+DataContainer::DataContainer(const vector<string> &names,
+                             const vector<vector<string>> &table)
     : names_(names)
     , rows_(table.size())
     , columns_(names.size())
@@ -26,6 +28,22 @@ DataContainer::DataContainer(const std::vector<std::string> &names,
     }
   }
   Validation();
+}
+
+const vector<ElementContainer>& DataContainer::operator[] (size_t index) const {
+  return data_[index];
+}
+
+const vector<string>& DataContainer::GetNames() const {
+  return names_;
+}
+
+size_t DataContainer::columns() const {
+  return columns_;
+}
+
+size_t DataContainer::rows() const {
+  return rows_;
 }
 
 void DataContainer::Validation() {

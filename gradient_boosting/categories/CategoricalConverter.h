@@ -19,7 +19,7 @@ class CategoricalConverter {
   double Convert(size_t id) const;
 
   double default_probability_;
-  std::vector<size_t> class_sum_;
+  std::vector<double> class_sum_;
   const CategoricalContainer container_;
   std::vector<double> conversion_result_;
   std::vector<size_t> features_count_;

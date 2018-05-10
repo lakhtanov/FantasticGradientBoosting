@@ -1,7 +1,3 @@
-//
-// Created by Roman Aleksandrov on 11.04.2018.
-//
-
 #ifndef UTILS_DATA_CONTAINERS_DATACONTAINER_H_
 #define UTILS_DATA_CONTAINERS_DATACONTAINER_H_
 
@@ -15,10 +11,13 @@ namespace data_containers {
 
 class DataContainer {
  public:
-  DataContainer(const std::vector<std::vector<std::string>>& table);
+  explicit DataContainer(const std::vector<std::vector<std::string>>& table);
   DataContainer(const std::vector<std::string>& names,
                 const std::vector<std::vector<std::string>>& table);
-
+  const std::vector<ElementContainer>& operator [] (size_t index) const;
+  const std::vector<std::string>& GetNames() const;
+  size_t columns() const;
+  size_t rows() const;
  private:
   void Validation();
 
