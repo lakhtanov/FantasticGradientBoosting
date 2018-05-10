@@ -11,13 +11,15 @@
 #include "gradient_boosting/config/GradientBoostingConfig.h"
 #include "utils/data_containers/ElementContainer.h"
 
+#include "third_party/ctpl/ctpl_stl.h"
 #include "third_party/json/single_include/nlohmann/json.hpp"
 
 using json = nlohmann::json;
-
+using thread_pool = ctpl::thread_pool;
 
 void TestElementContainer();
 void TestJSONReadPrint();
+void TestThreadPool();
 void TestThresholdContainer();
 void TestThresholdCreator(
     const gradient_boosting::binarization::ThresholdCreator& creator,
@@ -28,6 +30,7 @@ void TestThresholdCreators();
 int main(int argc,  char** argv) {
   TestElementContainer();
   TestJSONReadPrint();
+  TestThreadPool();
   TestThresholdContainer();
   TestThresholdCreators();
   if (argc <= 1) {
@@ -75,6 +78,24 @@ void TestJSONReadPrint() {
   std::cout << config.GetNumberOfValueThresholds() << " "
             << config.GetNumberOfStatisticsThresholds() << std::endl;
 
+}
+
+void TestThreadPool() {
+  // Quite an interesting link on how to use thread_pool: https://github.com/vit-vit/CTPL/issues/9
+  std::cout << "TestThreadPool" << std::endl;
+
+  thread_pool pool(2);
+
+  const size_t kSize = 5;
+  const std::vector<int> v(kSize, 0);
+  std::vector<std::future<int>> results(kSize);
+  for (size_t i = 0; i < kSize; ++i) {
+    results[i] = pool.push([i](int){ return (1 << i); });
+  }
+  for (size_t i = 0; i < kSize; ++i) {
+    std::cout << results[i].get() << " ";
+  }
+  std::cout << std::endl;
 }
 
 void TestThresholdContainer() {
