@@ -14,7 +14,7 @@ set(HEADER_FILES
 		gradient_boosting/categories/CategoricalContainer.h
 		gradient_boosting/categories/CategoricalConverter.h
 		gradient_boosting/config/GradientBoostingConfig.h
-		gradient_boosting/data_transformator/DataTransformator.h
+		gradient_boosting/data_transformer/DataTransformer.h
 		gradient_boosting/internal_data_container/InternalDataContainer.h
 		gradient_boosting/loss_functions/GradientBoostingLossFunction.h
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h
@@ -34,7 +34,7 @@ set(SOURCE_FILES
 		gradient_boosting/categories/CategoricalContainer.cpp
 		gradient_boosting/categories/CategoricalConverter.cpp
 		gradient_boosting/config/GradientBoostingConfig.cpp
-		gradient_boosting/data_transformator/DataTransformator.cpp
+		gradient_boosting/data_transformer/DataTransformer.cpp
 		gradient_boosting/internal_data_container/InternalDataContainer.cpp
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.cpp
 		gradient_boosting/trees/GradientBoostingTreeOblivious.cpp

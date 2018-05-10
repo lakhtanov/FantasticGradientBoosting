@@ -10,23 +10,26 @@ namespace internal_data_container {
 using std::string;
 using std::vector;
 
-InternalDataContainer::InternalDataContainer(const vector<vector<size_t>>& features_objects,
-                                             const vector<double>& target_values)
+InternalDataContainer::InternalDataContainer(
+    const vector<vector<size_t>>& features_objects,
+    const vector<double>& target_values)
     : InternalDataContainer(features_objects, target_values, {}) {
 }
 
-InternalDataContainer::InternalDataContainer(const std::vector<std::vector<size_t>>& features_objects,
-                                             const std::vector<std::string>& features_names)
+InternalDataContainer::InternalDataContainer(
+    const std::vector<std::vector<size_t>>& features_objects,
+    const std::vector<std::string>& features_names)
     : InternalDataContainer(features_objects, {}, features_names) {
 }
 
-InternalDataContainer::InternalDataContainer(const vector<vector<size_t>>& features_objects,
-                                             const vector<double>& target_values,
-                                             const vector<string>& features_names)
+InternalDataContainer::InternalDataContainer(
+    const vector<vector<size_t>>& features_objects,
+    const vector<double>& target_values,
+    const vector<string>& features_names)
     : features_objects_(features_objects)
     , target_values_(target_values)
     , features_names_(features_names) {
-  objects_features_.resize(features_objects.front().size(), vector<size_t>(features_objects.size()));
+  objects_features_.assign(features_objects.front().size(), vector<size_t>(features_objects.size()));
   for (size_t index = 0; index < features_objects.size(); ++index) {
     for (size_t jindex = 0; jindex < features_objects[index].size(); ++jindex) {
       objects_features_[jindex][index] = features_objects[index][jindex];

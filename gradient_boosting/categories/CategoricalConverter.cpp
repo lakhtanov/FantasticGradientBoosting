@@ -11,14 +11,14 @@ using std::string;
 using std::vector;
 
 CategoricalConverter::CategoricalConverter(const vector<string>& features,
-                                           const vector<double>& class_ids)
+                                           const vector<size_t>& class_ids)
     : container_(features)
     , lambda_(log(features.size() + 2)) {
   if (class_ids.empty()) {
     default_probability_ = 0.5;
   } else {
-    const double number_of_classes = (*std::max_element(class_ids.begin(), class_ids.end())) + 1.0;
-    assert(number_of_classes < 3 && features.size() == class_ids.size());
+    const size_t number_of_classes = (*std::max_element(class_ids.begin(), class_ids.end())) + 1;
+    assert(number_of_classes <= 2 && features.size() == class_ids.size());
     features_count_.resize(container_.Size());
     conversion_result_.resize(container_.Size());
     for (size_t index = 0; index < features.size(); ++index) {

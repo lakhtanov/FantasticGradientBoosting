@@ -12,7 +12,7 @@ namespace categories {
 class CategoricalConverter {
  public:
   explicit CategoricalConverter(const std::vector<std::string>& features,
-                                const std::vector<double>& class_ids);
+                                const std::vector<size_t>& class_ids);
   std::vector<double> GetConversionResult() const;
   double Convert(const std::string& feature_value) const;
  private:

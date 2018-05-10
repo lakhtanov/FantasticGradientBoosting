@@ -18,12 +18,15 @@ using ThresholdCreatorByStatistics = gradient_boosting::binarization::ThresholdC
 using ThresholdCreatorByValue = gradient_boosting::binarization::ThresholdCreatorByValue;
 using InternalDataContainer = gradient_boosting::internal_data_container::InternalDataContainer;
 using DataContainer = utils::data_containers::DataContainer;
+using GradientBoostingConfig = gradient_boosting::config::GradientBoostingConfig;
 
-DataTransformer::DataTransformer(
-    const gradient_boosting::config::GradientBoostingConfig& config)
-    : target_value_name_(config.GetTargetValueName()) {
-  creators_.push_back(std::make_unique<ThresholdCreatorByValue>(config.GetNumberOfValueThresholds()));
-  creators_.push_back(std::make_unique<ThresholdCreatorByStatistics>(config.GetNumberOfValueThresholds()));
+DataTransformer::DataTransformer(const GradientBoostingConfig& config)
+    : target_value_name_(config.GetTargetValueName())
+    , task_type_(config.GetTaskType()) {
+  creators_.push_back(
+      std::make_unique<ThresholdCreatorByValue>(config.GetNumberOfValueThresholds()));
+  creators_.push_back(
+      std::make_unique<ThresholdCreatorByStatistics>(config.GetNumberOfValueThresholds()));
 }
 
 InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data) {
@@ -34,14 +37,14 @@ InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data
 void DataTransformer::Fit(const DataContainer& data) {
   containers_.clear();
   converters_.clear();
-
-  auto res = FindTargetValueIndex(data, target_value_name_);
+  assert(task_type_ == GradientBoostingConfig::TaskType::Classification);
+  const auto res = FindTargetValueIndex(data, target_value_name_);
   assert(res.first);
   size_t target_value_index = res.second;
   FitTargetValue(data, target_value_index);
   vector<string> categorical_buffer(data.columns());
   vector<double> numerical_buffer(data.columns());
-  vector<double> target_values = GetTargetValues(data, target_value_name_);
+  const vector<double> target_values = GetTargetValues(data, target_value_name_);
   for (size_t index = 0; index < data.columns(); ++index) {
     if (index == target_value_index_) {
       continue;
@@ -75,8 +78,9 @@ void DataTransformer::FitTargetValue(const DataContainer& data,
           categorical_buffer);
 }
 
-std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(const DataContainer& data,
-                                                              const string& target_value_name_) const {
+std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(
+    const DataContainer& data,
+    const string& target_value_name_) const {
   size_t target_value_index = data.columns();
   size_t matched = 0;
   for (size_t index = 0; index < data.GetNames().size(); ++index) {
@@ -92,7 +96,7 @@ std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(const DataContaine
 
 vector <double> DataTransformer::GetTargetValues(const DataContainer& data,
                                                  const string& target_value_name_) const {
-  auto result = FindTargetValueIndex(data, target_value_name_);
+  const auto result = FindTargetValueIndex(data, target_value_name_);
   if (!result.first) {
     return {};
   }
@@ -115,8 +119,16 @@ vector <double> DataTransformer::GetTargetValues(const DataContainer& data,
 void DataTransformer::FitCategorical(size_t index,
                                      const vector<string>& features,
                                      const vector<double>& target_values) {
-  converters_.insert({index, gradient_boosting::categories::CategoricalConverter(features, target_values)});
-  FitNumerical(index, converters_.at(index).GetConversionResult());
+  if (task_type_ == GradientBoostingConfig::TaskType::Classification) {
+    vector<size_t> classes;
+    classes.reserve(target_values.size());
+    for (double el : target_values) {
+      classes.push_back(static_cast<size_t>(el));
+    }
+    converters_.insert({index, gradient_boosting::categories::CategoricalConverter(features, classes)});
+    FitNumerical(index, converters_.at(index).GetConversionResult());
+  }
+  assert(false);
 }
 
 void DataTransformer::FitNumerical(size_t index,
@@ -142,7 +154,7 @@ InternalDataContainer DataTransformer::Transform(const DataContainer& data) cons
       feature_object.push_back(TransformNumerical(index, numerical_buffer));
     }
   }
-  auto target_values = GetTargetValues(data, target_value_name_);
+  const auto target_values = GetTargetValues(data, target_value_name_);
   return InternalDataContainer(feature_object, target_values, data.GetNames());
 }
 
