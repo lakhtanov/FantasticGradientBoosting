@@ -9,8 +9,6 @@
 namespace gradient_boosting {
 namespace config {
 
-// TODO(rialeksandrov): class containing all the necessary configuration
-// information for running GradientBoosting model.
 class GradientBoostingConfig {
  public:
   explicit GradientBoostingConfig(const nlohmann::json& config);

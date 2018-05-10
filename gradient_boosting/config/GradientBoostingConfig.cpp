@@ -21,7 +21,7 @@ GradientBoostingConfig::GradientBoostingConfig(const json& config)
     , loss_function_(GetLossFunction(config))
 {
 }
-
+// TODO(rialeksandrov) Try to avoid using this function and init map like 'static constexpr'
 unordered_map<string, Verbose> GradientBoostingConfig::GetVerboseMapping() const {
   unordered_map<string, Verbose> res = {
       {"v1", Verbose::v1},
@@ -30,7 +30,7 @@ unordered_map<string, Verbose> GradientBoostingConfig::GetVerboseMapping() const
   };
   return res;
 };
-
+// TODO(rialeksandrov) Try to avoid using this function and init map with 'static constexpr'
 unordered_map<string, LossFunction> GradientBoostingConfig::GetLossFunctionMapping() const {
   unordered_map<string, LossFunction> res = {
       {"MSE", LossFunction::MSE},
