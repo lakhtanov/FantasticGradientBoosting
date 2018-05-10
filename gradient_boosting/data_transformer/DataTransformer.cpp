@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,10 +15,13 @@ namespace data_transformer {
 using std::string;
 using std::vector;
 
+using CategoricalConverter = gradient_boosting::categories::CategoricalConverter;
+
+using DataContainer = utils::data_containers::DataContainer;
+using ThresholdContainer = gradient_boosting::binarization::ThresholdContainer;
 using ThresholdCreatorByStatistics = gradient_boosting::binarization::ThresholdCreatorByStatistics;
 using ThresholdCreatorByValue = gradient_boosting::binarization::ThresholdCreatorByValue;
 using InternalDataContainer = gradient_boosting::internal_data_container::InternalDataContainer;
-using DataContainer = utils::data_containers::DataContainer;
 using GradientBoostingConfig = gradient_boosting::config::GradientBoostingConfig;
 
 DataTransformer::DataTransformer(const GradientBoostingConfig& config)
@@ -87,20 +91,20 @@ std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(
     const auto& el = data.GetNames()[index];
     if (el == target_value_name_) {
       target_value_index = index;
-      matched++;
+      ++matched;
     }
   }
   assert(matched <= 1);
   return {target_value_index != data.columns(), target_value_index};
 }
 
-vector <double> DataTransformer::GetTargetValues(const DataContainer& data,
+vector<double> DataTransformer::GetTargetValues(const DataContainer& data,
                                                  const string& target_value_name_) const {
   const auto result = FindTargetValueIndex(data, target_value_name_);
   if (!result.first) {
     return {};
   }
-  size_t target_value_index = result.second;
+  const size_t target_value_index = result.second;
   vector<double> target_values(data.rows());
   if (data[0][target_value_index].IsDouble()) {
     for (size_t index = 0; index < data.rows(); ++index) {
@@ -123,9 +127,10 @@ void DataTransformer::FitCategorical(size_t index,
     vector<size_t> classes;
     classes.reserve(target_values.size());
     for (double el : target_values) {
-      classes.push_back(static_cast<size_t>(el));
+      // TODO(rialeksandrov) Bad solution, but ok for a while.
+      classes.push_back(static_cast<size_t>(lround(el)));
     }
-    converters_.insert({index, gradient_boosting::categories::CategoricalConverter(features, classes)});
+    converters_.insert({index, CategoricalConverter(features, classes)});
     FitNumerical(index, converters_.at(index).GetConversionResult());
   }
   assert(false);
@@ -133,7 +138,7 @@ void DataTransformer::FitCategorical(size_t index,
 
 void DataTransformer::FitNumerical(size_t index,
                                    const vector<double>& features) {
-  containers_.insert({index, gradient_boosting::binarization::ThresholdContainer(creators_, features)});
+  containers_.insert({index, ThresholdContainer(creators_, features)});
 }
 
 InternalDataContainer DataTransformer::Transform(const DataContainer& data) const {
