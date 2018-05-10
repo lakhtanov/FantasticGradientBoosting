@@ -1,0 +1,8 @@
+{
+  "Verbose" : "v1",
+  "BoostingConfig" : {
+    "NumberOfValueThresholds" : 10,
+    "NumberOfStatisticsThresholds" : 20,
+    "LossFunction" : "MSE"
+  }
+}
