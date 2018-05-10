@@ -10,10 +10,10 @@ GradientBoostingSplitInfo::GradientBoostingSplitInfo(
     size_t right_split_size,
     double right_split_value)
     : loss(loss)
-      , left_split_size(left_split_size)
-      , left_split_value(left_split_value)
-      , right_split_size(right_split_size)
-      , right_split_value(right_split_value) {
+    , left_split_size(left_split_size)
+    , left_split_value(left_split_value)
+    , right_split_size(right_split_size)
+    , right_split_value(right_split_value) {
 }
 
 }  // namespace loss_functions
