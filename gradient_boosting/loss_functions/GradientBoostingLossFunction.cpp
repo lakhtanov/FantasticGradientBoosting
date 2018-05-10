@@ -21,6 +21,7 @@ void GradientBoostingLossFunction::Configure(
   objects_ = objects;
 }
 
+// TODO(lakhtanov): move to the tree building part.
 vector<size_t> GradientBoostingLossFunction::GetLeftSplit(
     size_t feature_split_value) const {
   std::vector<size_t> left_split;
@@ -45,6 +46,7 @@ size_t GradientBoostingLossFunction::GetLeftSplitSize(
   return left_split_size;
 }
 
+// TODO(lakhtanov): move to the tree building part.
 vector<size_t> GradientBoostingLossFunction::GetRightSplit(
     size_t feature_split_value) const {
   std::vector<size_t> right_split;

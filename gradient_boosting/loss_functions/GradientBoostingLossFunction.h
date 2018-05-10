@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "gradient_boosting/loss_functions/GradientBoostingSplitInfo.h"
+
 namespace gradient_boosting {
 namespace loss_functions {
 
@@ -15,7 +17,8 @@ class GradientBoostingLossFunction {
   virtual void Configure(size_t feature, const std::vector<size_t>& objects);
   virtual std::vector<size_t> GetLeftSplit(size_t feature_split_value) const;
   virtual size_t GetLeftSplitSize(size_t feature_split_value) const;
-  virtual double GetLoss(size_t feature_split_value) const = 0;
+  virtual GradientBoostingSplitInfo GetLoss(
+      size_t feature_split_value) const = 0;
   virtual std::vector<size_t> GetRightSplit(size_t feature_split_value) const;
   virtual size_t GetRightSplitSize(size_t feature_split_value) const;
  protected:

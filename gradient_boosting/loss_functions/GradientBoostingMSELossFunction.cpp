@@ -53,7 +53,7 @@ size_t GradientBoostingMSELossFunction::GetLeftSplitSize(
   return objects_prefix_num_sum_[feature_split_value];
 }
 
-double GradientBoostingMSELossFunction::GetLoss(
+GradientBoostingSplitInfo GradientBoostingMSELossFunction::GetLoss(
     size_t feature_split_value) const {
   const double left_split_squares_sum =
       target_values_prefix_squares_sum_[feature_split_value];
@@ -76,13 +76,20 @@ double GradientBoostingMSELossFunction::GetLoss(
           left_split_squares_sum,
           left_split_sum,
           left_split_sum_avg)
+      + log(left_split_size + 1.0)
       + GetLossNode(
           right_split_size,
           right_split_squares_sum,
           right_split_sum,
-          right_split_sum_avg);
+          right_split_sum_avg)
+      + log(right_split_size + 1.0);
 
-  return loss;
+  return GradientBoostingSplitInfo(
+      loss,
+      left_split_size,
+      left_split_sum_avg,
+      right_split_size,
+      right_split_sum_avg);
 }
 
 size_t GradientBoostingMSELossFunction::GetRightSplitSize(
@@ -95,11 +102,10 @@ double GradientBoostingMSELossFunction::GetLossNode(
     double split_squares_sum,
     double split_sum,
     double split_sum_avg) const {
-  return sqrt(
+  return (
       split_squares_sum
       - 2 * split_sum * split_sum_avg
-      + split_size * split_sum_avg * split_sum_avg)
-      / split_size;
+      + split_size * split_sum_avg * split_sum_avg);
 }
 
 }  // namespace loss_functions

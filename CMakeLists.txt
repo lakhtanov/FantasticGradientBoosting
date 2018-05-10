@@ -16,6 +16,7 @@ set(HEADER_FILES
 		gradient_boosting/config/GradientBoostingConfig.h
 		gradient_boosting/loss_functions/GradientBoostingLossFunction.h
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h
+		gradient_boosting/loss_functions/GradientBoostingSplitInfo.h
 		gradient_boosting/trees/GradientBoostingTree.h
 		gradient_boosting/trees/GradientBoostingTreeOblivious.h
 		utils/data_containers/ElementContainer.h
@@ -34,6 +35,7 @@ set(SOURCE_FILES
 		gradient_boosting/config/GradientBoostingConfig.cpp
 		gradient_boosting/loss_functions/GradientBoostingLossFunction.cpp
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.cpp
+		gradient_boosting/loss_functions/GradientBoostingSplitInfo.cpp
 		gradient_boosting/trees/GradientBoostingTreeOblivious.cpp
 		gradient_boosting_app.cpp
 		utils/data_containers/ElementContainer.cpp
