@@ -7,6 +7,9 @@ namespace gradient_boosting {
 namespace loss_functions {
 
 struct GradientBoostingSplitInfo {
+  GradientBoostingSplitInfo() = default;
+  explicit GradientBoostingSplitInfo(
+      const GradientBoostingSplitInfo& split_info) = default;
   explicit GradientBoostingSplitInfo(
       double loss,
       size_t left_split_size,

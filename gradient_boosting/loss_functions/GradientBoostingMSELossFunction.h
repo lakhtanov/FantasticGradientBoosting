@@ -1,6 +1,7 @@
 #ifndef GRADIENT_BOOSTING_LOSS_FUNCTIONS_GRADIENTBOOSTINGMSELOSSFUNCTION_H_
 #define GRADIENT_BOOSTING_LOSS_FUNCTIONS_GRADIENTBOOSTINGMSELOSSFUNCTION_H_
 
+#include <memory>
 #include <vector>
 
 #include "gradient_boosting/loss_functions/GradientBoostingLossFunction.h"
@@ -12,10 +13,13 @@ class GradientBoostingMSELossFunction : public GradientBoostingLossFunction {
  public:
   using GradientBoostingLossFunction::GradientBoostingLossFunction;
 
+  std::unique_ptr<GradientBoostingLossFunction> Clone() const override;
   void Configure(size_t feature, const std::vector<size_t>& objects) override;
   size_t GetLeftSplitSize(size_t feature_split_value) const override;
   GradientBoostingSplitInfo GetLoss(size_t feature_split_value) const override;
   size_t GetRightSplitSize(size_t feature_split_value) const override;
+ protected:
+  double GetLoss(double value, double target_value) const override;
  private:
   double GetLossNode(
       size_t split_size,

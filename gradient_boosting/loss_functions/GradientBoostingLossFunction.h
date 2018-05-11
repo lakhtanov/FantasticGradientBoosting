@@ -1,6 +1,7 @@
 #ifndef GRADIENT_BOOSTING_LOSS_FUNCTIONS_GRADIENTBOOSTINGLOSSFUNCTION_H_
 #define GRADIENT_BOOSTING_LOSS_FUNCTIONS_GRADIENTBOOSTINGLOSSFUNCTION_H_
 
+#include <memory>
 #include <vector>
 
 #include "gradient_boosting/loss_functions/GradientBoostingSplitInfo.h"
@@ -14,14 +15,19 @@ class GradientBoostingLossFunction {
       const std::vector<std::vector<size_t>>& features_objects,
       const std::vector<std::vector<size_t>>& objects_features,
       const std::vector<double>& target_values);
+  virtual std::unique_ptr<GradientBoostingLossFunction> Clone() const = 0;
   virtual void Configure(size_t feature, const std::vector<size_t>& objects);
-  virtual std::vector<size_t> GetLeftSplit(size_t feature_split_value) const;
   virtual size_t GetLeftSplitSize(size_t feature_split_value) const;
+  static double GetLoss(
+      const GradientBoostingLossFunction& loss_function,
+      double value,
+      double target_value);
   virtual GradientBoostingSplitInfo GetLoss(
       size_t feature_split_value) const = 0;
-  virtual std::vector<size_t> GetRightSplit(size_t feature_split_value) const;
   virtual size_t GetRightSplitSize(size_t feature_split_value) const;
  protected:
+  virtual double GetLoss(double value, double target_value) const = 0;
+
   size_t feature_;
   const std::vector<std::vector<size_t>>& features_objects_;
   std::vector<size_t> objects_;
