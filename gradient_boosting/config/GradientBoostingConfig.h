@@ -21,10 +21,12 @@ class GradientBoostingConfig {
   size_t GetNumberOfStatisticsThresholds() const;
   std::string GetTargetValueName() const;
   TaskType GetTaskType() const;
+  std::string GetTrainData() const;
   Verbose GetVerbose() const;
  private:
   std::unordered_map<std::string, Verbose> GetVerboseMapping() const;
   std::unordered_map<std::string, LossFunction> GetLossFunctionMapping() const;
+  std::unordered_map<std::string, TaskType> GetTaskTypeMapping() const;
 
   LossFunction GetLossFunction(const nlohmann::json& config) const;
   Verbose GetVerbose(const nlohmann::json& config) const;
@@ -32,16 +34,19 @@ class GradientBoostingConfig {
   size_t GetNumberOfStatisticsThresholds(const nlohmann::json& config) const;
   std::string GetTargetValueName(const nlohmann::json& config) const;
   TaskType GetTaskType(const nlohmann::json& config) const;
+  std::string GetTrainData(const nlohmann::json& config) const;
 
   // These maps should be higher than fields inited by them!
   // (C++ motherfucker, do you speak it?)
   const std::unordered_map<std::string, Verbose> to_verbose_;
   const std::unordered_map<std::string, LossFunction> to_loss_function_;
+  const std::unordered_map<std::string, TaskType> to_task_type_;
 
   const LossFunction loss_function_;
   const size_t statistics_thresholds_;
   const std::string target_value_name_;
   const TaskType task_type_;
+  const std::string train_data_;
   const size_t value_thresholds_;
   const Verbose verbose_;
 };

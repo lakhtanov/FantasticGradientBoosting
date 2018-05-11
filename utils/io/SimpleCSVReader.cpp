@@ -19,6 +19,7 @@ std::vector<std::string> split(const std::string &str, char token = ',') {
       to_push += el;
     }
   }
+  result.push_back(to_push);
   return result;
 }
 

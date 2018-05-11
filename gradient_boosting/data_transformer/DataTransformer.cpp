@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 #include "gradient_boosting/binarization/ThresholdCreatorByStatistics.h"
 #include "gradient_boosting/binarization/ThresholdCreatorByValue.h"
 #include "gradient_boosting/data_transformer/DataTransformer.h"
@@ -35,6 +37,7 @@ DataTransformer::DataTransformer(const GradientBoostingConfig& config)
 
 InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data) {
   Fit(data);
+  std::cout << "Fit completed" << std::endl;
   return Transform(data);
 }
 
@@ -46,14 +49,17 @@ void DataTransformer::Fit(const DataContainer& data) {
   assert(res.first);
   size_t target_value_index = res.second;
   FitTargetValue(data, target_value_index);
-  vector<string> categorical_buffer(data.columns());
-  vector<double> numerical_buffer(data.columns());
+  vector<string> categorical_buffer(data.rows());
+  vector<double> numerical_buffer(data.rows());
+  std::cout << "FitTargetValue completed " << std::endl;
   const vector<double> target_values = GetTargetValues(data, target_value_name_);
+  std::cout << "GetTargetValues completed " << target_values.size() << " " << data.rows() << " "<< target_value_index << std::endl;
   for (size_t index = 0; index < data.columns(); ++index) {
-    if (index == target_value_index_) {
+    if (index == target_value_index) {
       continue;
     }
     if (data[0][index].IsString()) {
+      std::cout << "No strings " << index << " " << std::endl;
       for (size_t idx = 0; idx < data.rows(); ++idx) {
         categorical_buffer[idx] = data[idx][index].GetString();
       }
@@ -74,7 +80,7 @@ void DataTransformer::FitTargetValue(const DataContainer& data,
     return;
   }
   vector<string> categorical_buffer(data.rows());
-  for (size_t index = 0; index < data.columns(); ++index) {
+  for (size_t index = 0; index < data.rows(); ++index) {
     categorical_buffer[index] = data[index][target_value_index].GetString();
   }
   target_values_converter_ =
@@ -111,7 +117,7 @@ vector<double> DataTransformer::GetTargetValues(const DataContainer& data,
       target_values[index] = data[index][target_value_index].GetDouble();
     }
   } else {
-    for (size_t index = 0; index < data.columns(); ++index) {
+    for (size_t index = 0; index < data.rows(); ++index) {
       const auto res = target_values_converter_->GetId(data[index][target_value_index].GetString());
       assert(res.first);
       target_values[index] = res.second;
@@ -143,9 +149,13 @@ void DataTransformer::FitNumerical(size_t index,
 
 InternalDataContainer DataTransformer::Transform(const DataContainer& data) const {
   vector<vector<size_t>> feature_object;
-  vector<string> categorical_buffer(data.columns());
-  vector<double> numerical_buffer(data.columns());
+  vector<string> categorical_buffer(data.rows());
+  vector<double> numerical_buffer(data.rows());
+  const auto res = FindTargetValueIndex(data, target_value_name_);
   for (size_t index = 0; index < data.columns(); ++index) {
+    if (res.first && index == res.second) {
+      continue;
+    }
     if (data[0][index].IsString()) {
       for (size_t idx = 0; idx < data.rows(); ++idx) {
         categorical_buffer[idx] = data[idx][index].GetString();

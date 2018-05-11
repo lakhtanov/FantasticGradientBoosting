@@ -62,7 +62,6 @@ class DataTransformer {
   std::vector<std::unique_ptr<gradient_boosting::binarization::ThresholdCreator>> creators_;
   std::unique_ptr<gradient_boosting::categories::CategoricalContainer> target_values_converter_;
   const std::string target_value_name_;
-  size_t target_value_index_;
   gradient_boosting::config::GradientBoostingConfig::TaskType task_type_;
 };
 

@@ -2,6 +2,7 @@
 #include <cmath>
 #include <memory>
 #include <numeric>
+#include <iostream>
 
 #include "gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h"
 
@@ -29,12 +30,14 @@ void GradientBoostingMSELossFunction::Configure(
   vector<double> feature_target_values(
       features_objects_[feature].size(), 0.0);
   vector<size_t> objects_num(features_objects_[feature].size(), 0);
+  // std::cout << "Here we are" << std::endl;
   for (size_t object : objects) {
+    // std::cout << "Here we are " <<  object << " " <<feature << " " << objects_features_.size() << " " << features_objects_.size() << std::endl;
     const size_t object_feature_value = objects_features_[object][feature];
     feature_target_values[object_feature_value] += target_values_[object];
     ++objects_num[object_feature_value];
   }
-
+  // std::cout << "Here we are" << std::endl;
   objects_prefix_num_sum_.clear();
   objects_prefix_num_sum_.resize(objects_num.size(), 0);
   partial_sum(

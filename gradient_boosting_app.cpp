@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <gradient_boosting/GradientBoosting.h>
 
 #include "gradient_boosting/binarization/ThresholdContainer.h"
 #include "gradient_boosting/binarization/ThresholdCreator.h"
@@ -10,6 +11,7 @@
 #include "gradient_boosting/binarization/ThresholdCreatorByStatistics.h"
 #include "gradient_boosting/config/GradientBoostingConfig.h"
 #include "utils/data_containers/ElementContainer.h"
+#include "utils/io/SimpleCSVReader.h"
 
 #include "third_party/ctpl/ctpl_stl.h"
 #include "third_party/json/single_include/nlohmann/json.hpp"
@@ -42,9 +44,11 @@ int main(int argc,  char** argv) {
   json config;
   in >> config;
   const gradient_boosting::config::GradientBoostingConfig gb_config(config);
-  std::cout << "Achtung working json reading to config : "
-            << gb_config.GetNumberOfStatisticsThresholds() << " "
-            << gb_config.GetNumberOfValueThresholds() << std::endl;
+  utils::io::SimpleCSVReader reader(gb_config.GetTrainData());
+  const auto data = reader.ReadFile();
+  std::cout << data.columns() << " " << data.rows() << std::endl;
+  gradient_boosting::GradientBoosting gb(gb_config);
+  gb.TestGradientBoosting(data);
   return 0;
 }
 
@@ -73,11 +77,6 @@ void TestJSONReadPrint() {
       }
   };
   std::cout << j2.dump(4) << std::endl;
-
-  const GradientBoostingConfig config(j2);
-  std::cout << config.GetNumberOfValueThresholds() << " "
-            << config.GetNumberOfStatisticsThresholds() << std::endl;
-
 }
 
 void TestThreadPool() {
