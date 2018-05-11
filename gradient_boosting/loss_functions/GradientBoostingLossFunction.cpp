@@ -10,8 +10,8 @@ GradientBoostingLossFunction::GradientBoostingLossFunction(
     const std::vector<std::vector<size_t>>& objects_features,
     const std::vector<double>& target_values)
     : features_objects_(features_objects)
-      , objects_features_(objects_features)
-      , target_values_(target_values) {
+    , objects_features_(objects_features)
+    , target_values_(target_values) {
 }
 
 void GradientBoostingLossFunction::Configure(
@@ -19,19 +19,6 @@ void GradientBoostingLossFunction::Configure(
     const std::vector<size_t>& objects) {
   feature_ = feature;
   objects_ = objects;
-}
-
-// TODO(lakhtanov): move to the tree building part.
-vector<size_t> GradientBoostingLossFunction::GetLeftSplit(
-    size_t feature_split_value) const {
-  std::vector<size_t> left_split;
-  for (size_t object : objects_) {
-    if (features_objects_[feature_][object] <= feature_split_value) {
-      left_split.push_back(object);
-    }
-  }
-
-  return left_split;
 }
 
 size_t GradientBoostingLossFunction::GetLeftSplitSize(
@@ -46,17 +33,11 @@ size_t GradientBoostingLossFunction::GetLeftSplitSize(
   return left_split_size;
 }
 
-// TODO(lakhtanov): move to the tree building part.
-vector<size_t> GradientBoostingLossFunction::GetRightSplit(
-    size_t feature_split_value) const {
-  std::vector<size_t> right_split;
-  for (size_t object : objects_) {
-    if (!(features_objects_[feature_][object] <= feature_split_value)) {
-      right_split.push_back(object);
-    }
-  }
-
-  return right_split;
+double GradientBoostingLossFunction::GetLoss(
+    const GradientBoostingLossFunction& loss_function,
+    double value,
+    double target_value) {
+  return loss_function.GetLoss(value, target_value);
 }
 
 size_t GradientBoostingLossFunction::GetRightSplitSize(

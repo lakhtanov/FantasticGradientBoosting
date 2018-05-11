@@ -36,6 +36,7 @@ set(SOURCE_FILES
 		gradient_boosting/loss_functions/GradientBoostingLossFunction.cpp
 		gradient_boosting/loss_functions/GradientBoostingMSELossFunction.cpp
 		gradient_boosting/loss_functions/GradientBoostingSplitInfo.cpp
+		gradient_boosting/trees/GradientBoostingTree.cpp
 		gradient_boosting/trees/GradientBoostingTreeOblivious.cpp
 		gradient_boosting_app.cpp
 		utils/data_containers/ElementContainer.cpp

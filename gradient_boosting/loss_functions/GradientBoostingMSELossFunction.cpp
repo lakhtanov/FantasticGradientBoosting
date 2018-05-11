@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <numeric>
 
 #include "gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h"
@@ -10,6 +11,15 @@ namespace loss_functions {
 using std::max;
 using std::partial_sum;
 using std::vector;
+
+std::unique_ptr<GradientBoostingLossFunction>
+    GradientBoostingMSELossFunction::Clone() const {
+  return
+      std::make_unique<GradientBoostingMSELossFunction>(
+          features_objects_,
+          objects_features_,
+          target_values_);
+}
 
 void GradientBoostingMSELossFunction::Configure(
     size_t feature,
@@ -95,6 +105,12 @@ GradientBoostingSplitInfo GradientBoostingMSELossFunction::GetLoss(
 size_t GradientBoostingMSELossFunction::GetRightSplitSize(
     size_t feature_split_value) const {
   return objects_prefix_num_sum_.back() - GetLeftSplitSize(feature_split_value);
+}
+
+double GradientBoostingMSELossFunction::GetLoss(
+    double value, double target_value) const {
+  const double diff = target_value - value;
+  return diff * diff;
 }
 
 double GradientBoostingMSELossFunction::GetLossNode(
