@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h"
+#include "gradient_boosting/loss_functions/GradientBoostingSplitInfo.h"
 
 namespace gradient_boosting {
 namespace loss_functions {
@@ -96,7 +97,6 @@ GradientBoostingSplitInfo GradientBoostingMSELossFunction::GetLoss(
           right_split_sum,
           right_split_sum_avg)
       + log(right_split_size + 1.0);
-
   return GradientBoostingSplitInfo(
       loss,
       left_split_size,

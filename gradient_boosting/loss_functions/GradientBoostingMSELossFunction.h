@@ -18,7 +18,6 @@ class GradientBoostingMSELossFunction : public GradientBoostingLossFunction {
   size_t GetLeftSplitSize(size_t feature_split_value) const override;
   GradientBoostingSplitInfo GetLoss(size_t feature_split_value) const override;
   size_t GetRightSplitSize(size_t feature_split_value) const override;
- protected:
   double GetLoss(double value, double target_value) const override;
  private:
   double GetLossNode(

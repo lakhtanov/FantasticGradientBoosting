@@ -115,5 +115,17 @@ string GradientBoostingConfig::GetTrainData() const {
   return train_data_;
 }
 
+size_t GradientBoostingConfig::GetNumberOfThreads() const {
+  return 0;
+}
+
+size_t GradientBoostingConfig::GetNumberOfTrees() const {
+  return 10;
+}
+
+size_t GradientBoostingConfig::GetHeight() const {
+  return 3;
+}
+
 }  // namespace config
 }  // namespace gradient_boosting

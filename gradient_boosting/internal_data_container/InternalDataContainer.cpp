@@ -37,6 +37,14 @@ InternalDataContainer::InternalDataContainer(
   }
 }
 
+size_t InternalDataContainer::GetNumberOfObject() const {
+  return objects_features_.size();
+}
+
+size_t InternalDataContainer::GetNumberOfFeatures() const {
+  return features_objects_.size();
+}
+
 const vector<vector<size_t>>& InternalDataContainer::GetFeaturesObjects() const {
   return features_objects_;
 }

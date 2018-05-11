@@ -19,6 +19,9 @@ class InternalDataContainer {
                         const std::vector<double>& target_values,
                         const std::vector<std::string>& features_names);
 
+  size_t GetNumberOfObject() const;
+  size_t GetNumberOfFeatures() const;
+
   const std::vector<std::vector<size_t>>& GetFeaturesObjects() const;
   const std::vector<std::vector<size_t>>& GetObjectsFeatures() const;
 

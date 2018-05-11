@@ -3,9 +3,13 @@
 
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 #include <gradient_boosting/config/GradientBoostingConfig.h>
+#include <gradient_boosting/trees/GradientBoostingTreeOblivious.h>
 #include <utils/data_containers/DataContainer.h>
+#include <gradient_boosting/internal_data_container/InternalDataContainer.h>
+#include <gradient_boosting/data_transformer/DataTransformer.h>
 
 #include "third_party/ctpl/ctpl_stl.h"
 
@@ -20,8 +24,16 @@ class GradientBoosting {
   std::unordered_map<std::string, double> PredictProba(const utils::data_containers::DataContainer& data) const;
   std::unordered_map<std::string, std::string> PredictClassName(const utils::data_containers::DataContainer& data) const;
  private:
+  void Fit(const gradient_boosting::internal_data_container::InternalDataContainer& data);
+  std::pair<double, gradient_boosting::trees::GradientBoostingTreeOblivious> GetScoreAndTree(
+      const gradient_boosting::loss_functions::GradientBoostingLossFunction& loss_function,
+      const gradient_boosting::internal_data_container::InternalDataContainer& data);
+
+  size_t number_of_trees_;
   gradient_boosting::config::GradientBoostingConfig config_;
   ctpl::thread_pool thread_pool_;
+  std::vector<gradient_boosting::trees::GradientBoostingTreeOblivious> forest_;
+  std::unique_ptr<gradient_boosting::data_transformer::DataTransformer > data_transformer_;
 };
 
 }  // namespace gradient_boosting

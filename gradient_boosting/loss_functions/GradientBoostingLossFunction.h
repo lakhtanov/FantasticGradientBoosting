@@ -25,9 +25,9 @@ class GradientBoostingLossFunction {
   virtual GradientBoostingSplitInfo GetLoss(
       size_t feature_split_value) const = 0;
   virtual size_t GetRightSplitSize(size_t feature_split_value) const;
- protected:
   virtual double GetLoss(double value, double target_value) const = 0;
-
+  virtual ~GradientBoostingLossFunction() = default;
+ protected:
   size_t feature_;
   const std::vector<std::vector<size_t>>& features_objects_;
   std::vector<size_t> objects_;
