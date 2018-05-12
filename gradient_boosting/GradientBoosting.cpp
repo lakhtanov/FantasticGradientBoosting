@@ -178,8 +178,8 @@ GradientBoosting::GetScoreAndTree(
       features,
       thread_pool_);
   clear_build_tree_time_ +=  double(clock() - begin_clear) / CLOCKS_PER_SEC;
-  // result.first = EvaluateTree(*result.second, loss_function, data, all_object);
-  result.first = EvaluateTree(*result.second, loss_function_gradient, data, all_object);
+  result.first = EvaluateTree(*result.second, loss_function, data, all_object);
+  // result.first = EvaluateTree(*result.second, loss_function_gradient, data, all_object);
   clock_t end = clock();
   build_tree_time_ += double(end - begin) / CLOCKS_PER_SEC;
   return result;

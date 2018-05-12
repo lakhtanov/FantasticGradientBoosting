@@ -26,18 +26,13 @@ std::unique_ptr<GradientBoostingLossFunction>
 
 void GradientBoostingMSELossFunction::Configure(
     size_t feature,
+    size_t num_feature_values,
     const vector<size_t>& objects) {
-  GradientBoostingLossFunction::Configure(feature, objects);
+  GradientBoostingLossFunction::Configure(feature, num_feature_values, objects);
 
-  size_t num_feature_values = 0;
-  for (size_t object : objects) {
-    num_feature_values =
-        max(num_feature_values, objects_features_[object][feature] + 1);
-  }
-
-  vector<double> feature_target_values(num_feature_values, 0.0);
-  vector<double> feature_target_square_values(num_feature_values, 0.0);
-  vector<size_t> objects_num(num_feature_values, 0);
+  vector<double> feature_target_values(num_feature_values_, 0.0);
+  vector<double> feature_target_square_values(num_feature_values_, 0.0);
+  vector<size_t> objects_num(num_feature_values_, 0);
   for (size_t object : objects) {
     const size_t object_feature_value = objects_features_[object][feature];
     feature_target_values[object_feature_value] += target_values_[object];

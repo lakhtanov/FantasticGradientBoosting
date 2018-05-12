@@ -22,7 +22,7 @@ GradientBoostingTreeOblivious::GradientBoostingTreeOblivious(
     , height_(height) {
   features_.resize(height_);
   features_split_values_.resize(height_);
-  nodes_values_.resize((1 << (height_ + 1)) - 1);
+  nodes_values_.resize((1 << (height_ + 1)) - 1, 0);
 }
 
 inline pair<size_t, pair<double, vector<GradientBoostingSplitInfo>>>
@@ -44,7 +44,10 @@ GradientBoostingTreeOblivious::GetBestSplit(
       num_feature_values,
       vector<GradientBoostingSplitInfo>(objects_in_nodes.size()));
   for (size_t node = 0; node < objects_in_nodes.size(); ++node) {
-    loss_function_ptr->Configure(train_feature, objects_in_nodes[node]);
+    loss_function_ptr->Configure(
+        train_feature,
+        num_feature_values,
+        objects_in_nodes[node]);
     for (size_t feature_split_value = 0;
          feature_split_value < num_feature_values;
          ++feature_split_value) {

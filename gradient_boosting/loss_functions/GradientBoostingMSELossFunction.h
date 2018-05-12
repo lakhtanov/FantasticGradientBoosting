@@ -14,7 +14,10 @@ class GradientBoostingMSELossFunction : public GradientBoostingLossFunction {
   using GradientBoostingLossFunction::GradientBoostingLossFunction;
 
   std::unique_ptr<GradientBoostingLossFunction> Clone() const override;
-  void Configure(size_t feature, const std::vector<size_t>& objects) override;
+  void Configure(
+      size_t feature,
+      size_t num_feature_values,
+      const std::vector<size_t>& objects) override;
   size_t GetLeftSplitSize(size_t feature_split_value) const override;
   GradientBoostingSplitInfo GetLoss(size_t feature_split_value) const override;
   size_t GetRightSplitSize(size_t feature_split_value) const override;

@@ -16,8 +16,10 @@ GradientBoostingLossFunction::GradientBoostingLossFunction(
 
 void GradientBoostingLossFunction::Configure(
     size_t feature,
+    size_t num_feature_values,
     const std::vector<size_t>& objects) {
   feature_ = feature;
+  num_feature_values_ = num_feature_values;
   objects_ = objects;
 }
 
