@@ -99,7 +99,7 @@ unique_ptr<GradientBoostingLossFunction> GetLossFunction(const GradientBoostingC
 unique_ptr<GradientBoostingTree> GetTree(const GradientBoostingConfig& config,
                                                   const GradientBoostingLossFunction& loss_function) {
   // TODO(rialeksandrov) Get from config!
-  if (GradientBoostingConfig::LossFunction::MSE == config.GetLossFunction()) {
+  if (GradientBoostingConfig::TreeType::ObliviousTree == config.GetTreeType()) {
     return std::make_unique<GradientBoostingTreeOblivious >(loss_function,
                                                             config.GetHeight());
 

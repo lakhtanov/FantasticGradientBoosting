@@ -13,11 +13,13 @@ using std::unordered_map;
 using LossFunction = GradientBoostingConfig::LossFunction;
 using Verbose = GradientBoostingConfig::Verbose;
 using TaskType = GradientBoostingConfig::TaskType;
+using TreeType = GradientBoostingConfig::TreeType;
 
 GradientBoostingConfig::GradientBoostingConfig(const json& config)
     : to_verbose_(GetVerboseMapping())
     , to_loss_function_(GetLossFunctionMapping())
     , to_task_type_(GetTaskTypeMapping())
+    , to_tree_type_(GetTreeTypeMapping())
     , verbose_(GetVerbose(config))
     , value_thresholds_(GetNumberOfValueThresholds(config))
     , statistics_thresholds_(GetNumberOfStatisticsThresholds(config))
@@ -25,6 +27,12 @@ GradientBoostingConfig::GradientBoostingConfig(const json& config)
     , target_value_name_(GetTargetValueName(config))
     , task_type_(GetTaskType(config))
     , train_data_(GetTrainData(config))
+    , number_of_threads_(GetNumberOfThreads(config))
+    , number_of_trees_(GetNumberOfTrees(config))
+    , tree_height_(GetHeight(config))
+    , id_value_name_(GetIdValueName(config))
+    , learning_rate_(GetLearningRate(config))
+    , tree_type_(GetTreeType(config))
 {
 }
 // TODO(rialeksandrov) Try to avoid using this function and init map like 'static constexpr'
@@ -52,6 +60,13 @@ unordered_map<string, TaskType> GradientBoostingConfig::GetTaskTypeMapping() con
   return res;
 }
 
+unordered_map<string, TreeType> GradientBoostingConfig::GetTreeTypeMapping() const {
+  unordered_map<string, TreeType> res = {
+      {"ObliviousTree", TreeType::ObliviousTree},
+      {"Lakhtanov", TreeType::Lakhtanov},
+  };
+  return res;
+};
 Verbose GradientBoostingConfig::GetVerbose(const json& config) const {
   std::cout << "GradientBoostingConfig::GetVerbose" << std::endl;
   return to_verbose_.at(config.at("Verbose"));
@@ -87,6 +102,30 @@ LossFunction GradientBoostingConfig::GetLossFunction(const json& config) const {
   return to_loss_function_.at(config.at("BoostingConfig").at("LossFunction"));
 }
 
+size_t GradientBoostingConfig::GetNumberOfThreads(const nlohmann::json& config) const {
+  return config.at("BoostingConfig").at("NumberOfThreads");
+}
+
+size_t GradientBoostingConfig::GetNumberOfTrees(const nlohmann::json& config) const {
+  return config.at("BoostingConfig").at("NumberOfTrees");
+}
+
+size_t GradientBoostingConfig::GetHeight(const nlohmann::json& config) const {
+  return config.at("BoostingConfig").at("TreeHeight");
+}
+
+std::string GradientBoostingConfig::GetIdValueName(const nlohmann::json& config) const {
+  return config.at("BoostingConfig").at("IdName");
+}
+
+double GradientBoostingConfig::GetLearningRate(const nlohmann::json& config) const {
+  return config.at("BoostingConfig").at("LearningRate");
+}
+
+TreeType GradientBoostingConfig::GetTreeType(const nlohmann::json& config) const {
+  return to_tree_type_.at(config.at("BoostingConfig").at("TreeType"));
+}
+
 Verbose GradientBoostingConfig::GetVerbose() const {
   return verbose_;
 }
@@ -116,23 +155,27 @@ string GradientBoostingConfig::GetTrainData() const {
 }
 
 size_t GradientBoostingConfig::GetNumberOfThreads() const {
-  return 0;
+  return number_of_threads_;
 }
 
 size_t GradientBoostingConfig::GetNumberOfTrees() const {
-  return 1;
+  return number_of_trees_;
 }
 
 size_t GradientBoostingConfig::GetHeight() const {
-  return 6;
+  return tree_height_;
 }
 
 std::string GradientBoostingConfig::GetIdValueName () const {
-  return "EventId";
+  return id_value_name_;
 }
 
 double GradientBoostingConfig::GetLearningRate() const {
-  return 0.001;
+  return learning_rate_;
+}
+
+TreeType GradientBoostingConfig::GetTreeType() const {
+  return tree_type_;
 }
 
 }  // namespace config

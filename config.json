@@ -4,7 +4,13 @@
     "NumberOfValueThresholds" : 32,
     "NumberOfStatisticsThresholds" : 32,
     "LossFunction" : "MSE",
-    "TaskType" : "Classification"
+    "TaskType" : "Classification",
+    "NumberOfThreads" : 0,
+    "NumberOfTrees" : 10,
+    "TreeHeight" : 3,
+    "IdName" : "EventId",
+    "LearningRate" : 0.001,
+    "TreeType" : "ObliviousTree"
   },
   "Experiment" : {
     "TrainData" : "./experiments/higgs/sample.csv",
