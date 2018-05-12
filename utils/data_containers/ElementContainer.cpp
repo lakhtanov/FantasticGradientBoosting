@@ -10,7 +10,7 @@ namespace data_containers {
 ElementContainer::ElementContainer(const std::string &str)
     : raw_data_(str), type_(DataType::String) {
   try {
-    double el = std::stod(raw_data_);
+    std::stod(raw_data_);
     type_ = DataType::Double;
   } catch (...) {
     // TODO(rialeksandrov) Debug Output here.
