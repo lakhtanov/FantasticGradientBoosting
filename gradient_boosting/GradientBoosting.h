@@ -48,7 +48,7 @@ class GradientBoosting {
       loss_function,
       const gradient_boosting::internal_data_container::InternalDataContainer&
       data,
-      const std::vector<size_t>& objects) const;
+      const std::vector<size_t>& objects);
 
   std::pair<
       double,
@@ -67,7 +67,7 @@ class GradientBoosting {
       const gradient_boosting::trees::GradientBoostingTree& tree,
       const gradient_boosting::internal_data_container::InternalDataContainer&
       data,
-      const std::vector<size_t>& objects) const;
+      const std::vector<size_t>& objects);
 
   double learning_rate_;
   size_t number_of_trees_;
@@ -77,6 +77,11 @@ class GradientBoosting {
       forest_;
   std::unique_ptr<gradient_boosting::data_transformer::DataTransformer>
       data_transformer_;
+  double fit_time_;
+  double update_gradient_time_;
+  double evaluate_time_;
+  double build_tree_time_;
+  double clear_build_tree_time_;
 };
 
 /*

@@ -39,7 +39,12 @@ GradientBoosting::GradientBoosting(
     : learning_rate_(config.GetLearningRate())
     , number_of_trees_(config.GetNumberOfTrees())
     , config_(config)
-    , thread_pool_(config.GetNumberOfThreads()) {
+    , thread_pool_(config.GetNumberOfThreads())
+    , fit_time_(0.0)
+    , update_gradient_time_(0)
+    , evaluate_time_(0)
+    , build_tree_time_(0)
+    , clear_build_tree_time_(0){
 }
 
 vector<size_t> GetNumberedVector(size_t size) {
@@ -125,7 +130,8 @@ double GradientBoosting::EvaluateTree(
     const GradientBoostingTree& tree,
     const GradientBoostingLossFunction& loss_function,
     const InternalDataContainer& data,
-    const vector<size_t>& objects) const {
+    const vector<size_t>& objects) {
+  clock_t begin = clock();
   const auto predicted_targets = Predict(tree, data, objects);
   double sum = 0.0;
   for (size_t index = 0; index < objects.size(); ++index) {
@@ -133,6 +139,8 @@ double GradientBoosting::EvaluateTree(
         loss_function.GetLoss(
             predicted_targets[index], data.GetTargetValues()[objects[index]]);
   }
+  clock_t end = clock();
+  evaluate_time_ += double(end - begin) / CLOCKS_PER_SEC;
   return sum;
 }
 
@@ -144,6 +152,7 @@ GradientBoosting::GetScoreAndTree(
     const vector<size_t>& all_object,
     const vector<size_t>& all_features,
     const vector<double>& gradient) {
+  clock_t begin = clock();
   const size_t num_sample_object =
       std::min(
           size_t{200},
@@ -156,6 +165,7 @@ GradientBoosting::GetScoreAndTree(
   result.second = GetTree(config_, loss_function);
   const vector<size_t> objects = GetSample(all_object, num_sample_object);
   const vector<size_t> features = GetSample(all_features, num_sample_features);
+  clock_t begin_clear = clock();
   result.second->Fit(
       data.GetFeaturesObjects(),
       data.GetObjectsFeatures(),
@@ -163,7 +173,10 @@ GradientBoosting::GetScoreAndTree(
       objects,
       features,
       thread_pool_);
+  clear_build_tree_time_ +=  double(clock() - begin_clear) / CLOCKS_PER_SEC;
   result.first = EvaluateTree(*result.second, loss_function, data, all_object);
+  clock_t end = clock();
+  build_tree_time_ += double(end - begin) / CLOCKS_PER_SEC;
   return result;
 }
 
@@ -171,11 +184,14 @@ void GradientBoosting::UpdateGradient(
     vector<double>* gradient,
     const GradientBoostingTree& tree,
     const InternalDataContainer& data,
-    const vector<size_t>& objects) const {
+    const vector<size_t>& objects) {
+  clock_t begin = clock();
   const auto prediction = Predict(tree, data, objects);
   for (size_t index = 0; index < objects.size(); ++index) {
     (*gradient)[objects[index]] -= learning_rate_ * prediction[index];
   }
+  clock_t end = clock();
+  update_gradient_time_ += double(end - begin) / CLOCKS_PER_SEC;
 }
 
 void GradientBoosting::Fit(const DataContainer& data) {
@@ -187,6 +203,7 @@ void GradientBoosting::Fit(const DataContainer& data) {
 
 
 void GradientBoosting::Fit(const InternalDataContainer & data) {
+  clock_t begin = clock();
   const vector<size_t> all_objects =
       GetNumberedVector(data.GetNumberOfObject());
   const vector<size_t> all_features =
@@ -216,6 +233,11 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
         &gradient, *trees_to_chose[best_index].second, data, all_objects);
     forest_.emplace_back(std::move(trees_to_chose[best_index].second));
   }
+  clock_t end = clock();
+  fit_time_ += double(end - begin) / CLOCKS_PER_SEC;
+  std::cout.precision(3);
+  std::cout << std::fixed << fit_time_ << " " << update_gradient_time_ << " " << build_tree_time_
+            << " " << evaluate_time_ << " " << clear_build_tree_time_ << std::endl;
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
