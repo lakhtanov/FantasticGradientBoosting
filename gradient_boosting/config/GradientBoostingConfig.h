@@ -30,6 +30,9 @@ class GradientBoostingConfig {
   std::string GetIdValueName () const;
   double GetLearningRate() const;
   TreeType GetTreeType() const;
+
+  std::string GetTestData() const;
+  std::string GetResultFile() const;
  private:
   std::unordered_map<std::string, Verbose> GetVerboseMapping() const;
   std::unordered_map<std::string, LossFunction> GetLossFunctionMapping() const;
@@ -49,6 +52,9 @@ class GradientBoostingConfig {
   std::string GetIdValueName(const nlohmann::json& config) const;
   double GetLearningRate(const nlohmann::json& config) const;
   TreeType GetTreeType(const nlohmann::json& config) const;
+
+  std::string GetTestData(const nlohmann::json& config) const;
+  std::string GetResultFile(const nlohmann::json& config) const;
 
   // These maps should be higher than fields inited by them!
   // (C++ motherfucker, do you speak it?)
@@ -71,6 +77,9 @@ class GradientBoostingConfig {
   const std::string id_value_name_;
   const double learning_rate_;
   const TreeType tree_type_;
+
+  std::string test_data_;
+  std::string result_file_;
 };
 
 }  // namespace config

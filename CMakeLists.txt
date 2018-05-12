@@ -24,6 +24,7 @@ set(HEADER_FILES
 		utils/data_containers/ElementContainer.h
 		utils/data_containers/DataContainer.h
 		utils/io/CSVReaderBase.h
+		utils/io/ResultDumper.h
 		utils/io/SimpleCSVReader.h)
 
 set(SOURCE_FILES
@@ -46,6 +47,7 @@ set(SOURCE_FILES
 		utils/data_containers/ElementContainer.cpp
 		utils/data_containers/DataContainer.cpp
 		utils/io/CSVReaderBase.cpp
+		utils/io/ResultDumper.cpp
 		utils/io/SimpleCSVReader.cpp)
 
 add_executable(FantasticGradientBoosting ${HEADER_FILES} ${SOURCE_FILES})

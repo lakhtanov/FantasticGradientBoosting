@@ -11,6 +11,7 @@
 #include "gradient_boosting/binarization/ThresholdCreatorByStatistics.h"
 #include "gradient_boosting/config/GradientBoostingConfig.h"
 #include "utils/data_containers/ElementContainer.h"
+#include "utils/io/ResultDumper.h"
 #include "utils/io/SimpleCSVReader.h"
 
 #include "third_party/ctpl/ctpl_stl.h"
@@ -44,14 +45,26 @@ int main(int argc,  char** argv) {
   json config;
   in >> config;
   const gradient_boosting::config::GradientBoostingConfig gb_config(config);
-  utils::io::SimpleCSVReader reader(gb_config.GetTrainData());
-  const auto data = reader.ReadFile();
-  std::cout << data.columns() << " " << data.rows() << std::endl;
+  utils::io::SimpleCSVReader train_reader(gb_config.GetTrainData());
+  const auto train_data = train_reader.ReadFile();
+  std::cout << train_data.columns() << " " << train_data.rows() << std::endl;
   gradient_boosting::GradientBoosting gb(gb_config);
   //gb.TestGradientBoosting(data);
-  gb.Fit(data);
-  auto res = gb.PredictProba(data);
+  gb.Fit(train_data);
+  std::cout << "App::main: Fit completed" << std::endl;
+  utils::io::SimpleCSVReader test_reader(gb_config.GetTestData());
+  const auto test_data = test_reader.ReadFile();
+  auto res = gb.PredictProba(test_data);
   size_t index = 0;
+
+  utils::io::ResultDumper out(gb_config.GetResultFile(),
+                              gb_config.GetIdValueName(),
+                              gb_config.GetTargetValueName());
+
+  for (const auto& el : res) {
+    out.AddResult(el.first, el.second);
+  }
+
   /* for (auto el : res) {
     index++;
     std::cout << el.first << " " << el.second << " " << std::endl;

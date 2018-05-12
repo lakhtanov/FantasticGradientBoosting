@@ -33,6 +33,8 @@ GradientBoostingConfig::GradientBoostingConfig(const json& config)
     , id_value_name_(GetIdValueName(config))
     , learning_rate_(GetLearningRate(config))
     , tree_type_(GetTreeType(config))
+    , test_data_(GetTestData(config))
+    , result_file_(GetResultFile(config))
 {
 }
 // TODO(rialeksandrov) Try to avoid using this function and init map like 'static constexpr'
@@ -115,11 +117,19 @@ size_t GradientBoostingConfig::GetHeight(const nlohmann::json& config) const {
 }
 
 std::string GradientBoostingConfig::GetIdValueName(const nlohmann::json& config) const {
-  return config.at("BoostingConfig").at("IdName");
+  return config.at("Experiment").at("IdName");
 }
 
 double GradientBoostingConfig::GetLearningRate(const nlohmann::json& config) const {
   return config.at("BoostingConfig").at("LearningRate");
+}
+
+std::string GradientBoostingConfig::GetTestData(const nlohmann::json& config) const {
+  return config.at("Experiment").at("TestData");
+}
+
+std::string GradientBoostingConfig::GetResultFile(const nlohmann::json& config) const {
+  return config.at("Experiment").at("ResultFile");
 }
 
 TreeType GradientBoostingConfig::GetTreeType(const nlohmann::json& config) const {
@@ -176,6 +186,14 @@ double GradientBoostingConfig::GetLearningRate() const {
 
 TreeType GradientBoostingConfig::GetTreeType() const {
   return tree_type_;
+}
+
+string GradientBoostingConfig::GetTestData() const {
+  return test_data_;
+}
+
+string GradientBoostingConfig::GetResultFile() const {
+  return result_file_;
 }
 
 }  // namespace config

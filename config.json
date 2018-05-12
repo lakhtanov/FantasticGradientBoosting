@@ -1,19 +1,21 @@
 {
   "Verbose" : "v1",
   "BoostingConfig" : {
-    "NumberOfValueThresholds" : 5,
-    "NumberOfStatisticsThresholds" : 5,
+    "NumberOfValueThresholds" : 32,
+    "NumberOfStatisticsThresholds" : 32,
     "LossFunction" : "MSE",
     "TaskType" : "Classification",
     "NumberOfThreads" : 0,
-    "NumberOfTrees" : 10,
-    "TreeHeight" : 3,
-    "IdName" : "EventId",
+    "NumberOfTrees" : 2,
+    "TreeHeight" : 6,
     "LearningRate" : 0.001,
     "TreeType" : "ObliviousTree"
   },
   "Experiment" : {
     "TrainData" : "./experiments/higgs/sample.csv",
-    "TargetValueName" : "Label"
+    "TestData" : "./experiments/higgs/sample.csv",
+    "ResultFile" : "./experiments/higgs/result.csv",
+    "TargetValueName" : "Label",
+    "IdName" : "EventId"
   }
 }
