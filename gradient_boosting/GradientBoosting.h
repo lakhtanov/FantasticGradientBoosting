@@ -43,6 +43,21 @@ class GradientBoosting {
   std::unique_ptr<gradient_boosting::data_transformer::DataTransformer > data_transformer_;
 };
 
+/*
+ * class SimpleSampler {
+  SimpleSampler(size_t size);
+  vector<size_t> GetSample(size_t sample_size) {
+    vector<size_t> res = GetNumberedVector(number);
+    std::random_shuffle(res.begin(), res.end());
+    res.resize(sample_size);
+    return res;
+  }
+
+ public:
+  std::vector<int>
+
+};*/
+
 }  // namespace gradient_boosting
 
 #endif  // GRADIENT_BOOSTING_GRADIENTBOOSTING_H_

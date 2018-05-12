@@ -31,6 +31,8 @@ class DataTransformer {
   gradient_boosting::internal_data_container::InternalDataContainer Transform(
       const utils::data_containers::DataContainer& data) const;
 
+  const std::unordered_map<size_t, std::string>& GetTargetNames() const;
+
  private:
   std::pair<bool, size_t> FindTargetValueIndex(
       const utils::data_containers::DataContainer& data,
@@ -61,6 +63,7 @@ class DataTransformer {
   std::unordered_map<size_t, gradient_boosting::categories::CategoricalConverter> converters_;
   std::vector<std::unique_ptr<gradient_boosting::binarization::ThresholdCreator>> creators_;
   std::unique_ptr<gradient_boosting::categories::CategoricalContainer> target_values_converter_;
+  std::unordered_map<size_t, std::string> target_value_to_name_;
   const std::string target_value_name_;
   const std::string id_value_name_;
   gradient_boosting::config::GradientBoostingConfig::TaskType task_type_;
