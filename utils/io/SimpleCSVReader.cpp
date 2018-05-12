@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <iostream>
 
 namespace utils {
 namespace io {
@@ -33,13 +32,10 @@ SimpleCSVReader::SimpleCSVReader(const std::string &file_name, bool header)
 }
 
 data_containers::DataContainer SimpleCSVReader::ReadFile() const {
-  std::cout << "SimpleCSVReader::ReadFile()" << std::endl;
   std::ifstream in(file_name_);
-  std::cout << "SimpleCSVReader::ReadFile() " << file_name_ << std::endl;
   std::string str;
   if (header_) {
     std::getline(in, str);
-    std::cout << str << std::endl;
     const std::vector<std::string> names = split(str);
     std::vector<std::vector<std::string>> raw_data;
     while (std::getline(in, str)) {
