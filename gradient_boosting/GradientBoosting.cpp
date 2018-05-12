@@ -52,6 +52,7 @@ vector<size_t> GetSample(size_t number, size_t sample_size) {
 
 void GradientBoosting::TestGradientBoosting(
     const utils::data_containers::DataContainer& data) {
+  std::cout << "GradientBoosting::TestGradientBoosting" << std::endl;
   for (size_t index = 0; index < data.columns(); ++index) {
     std::cout << data[0][index].GetString() << " ";
   }
@@ -74,7 +75,7 @@ void GradientBoosting::TestGradientBoosting(
            train_objects, features, thread_pool_);
   std::unordered_map<double, size_t> cnt;
   for (size_t index = 0; index < 1 /*res.GetObjectsFeatures().size()*/; ++index) {
-    std::cout << abcd.Predict(res.GetObjectsFeatures()[index]) << " " << res.GetTargetValues()[index] << std::endl;
+    std::cout << "GradientBoosting::TestGradientBoosting " << abcd.Predict(res.GetObjectsFeatures()[index]) << " " << res.GetTargetValues()[index] << std::endl;
     cnt[abcd.Predict(res.GetObjectsFeatures()[index])]++;
   }
   std::cout << "GradientBoosting::TestGradientBoosting::predictions" << std::endl;
@@ -98,9 +99,11 @@ unique_ptr<GradientBoostingLossFunction> GetLossFunction(const GradientBoostingC
 std::vector<double> Predict(const GradientBoostingTreeOblivious &tree,
                             const InternalDataContainer& data,
                             const vector<size_t>& objects) {
+  // std::cout << "Predict" << std::endl;
   std::vector<double> result;
   result.reserve(objects.size());
   for (auto object : objects) {
+    // std::cout << "Predict for object #" << object << std::endl;
     result.push_back(tree.Predict(data.GetObjectsFeatures()[object]));
   }
   return result;
@@ -124,9 +127,11 @@ pair<double, GradientBoostingTreeOblivious> GradientBoosting::GetScoreAndTree(
     const InternalDataContainer& data,
     const vector<double>& gradient) {
 
-  size_t min_number_of_object = std::min(1000Ul, data.GetNumberOfObject());
-  size_t sample_size = std::max(min_number_of_object,
-                                size_t(sqrt(data.GetNumberOfObject())));
+  // size_t min_number_of_object = std::min(1000Ul, data.GetNumberOfObject());
+  size_t min_number_of_object = data.GetNumberOfObject();
+  // size_t sample_size = std::max(min_number_of_object,
+  //                               size_t(sqrt(data.GetNumberOfObject())));
+  size_t sample_size = data.GetNumberOfObject();
 
   std::vector<size_t> objects = GetSample(data.GetNumberOfObject(),
                                           sample_size);
@@ -164,7 +169,8 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
   std::vector<double> gradient = data.GetTargetValues();
   auto ptr_loss_function = GetLossFunction(config_, data);
 
-  size_t number_of_trees_per_tree = std::max(10Ul, size_t(log(data.GetNumberOfObject() + 1.0)));
+  // size_t number_of_trees_per_tree = std::max(10Ul, size_t(log(data.GetNumberOfObject() + 1.0)));
+  size_t number_of_trees_per_tree = 1;
 
   for (size_t index_tree = 0; index_tree < number_of_trees_; ++index_tree) {
     std::cout << "GradientBoosting::Fit learning tree #" << index_tree << std::endl;
@@ -190,6 +196,7 @@ unordered_map<string, double> GradientBoosting::PredictProba(
 
 unordered_map<string, double> GradientBoosting::PredictProba(
     const InternalDataContainer& data) const {
+  std::cout << "GradientBoosting::PredictProba" << std::endl;
   vector<double>accumulate(data.GetNumberOfObject());
   for(const auto& tree : forest_) {
     auto target_values = Predict(tree, data, GetNumberedVector(data.GetNumberOfObject()));
@@ -201,6 +208,14 @@ unordered_map<string, double> GradientBoosting::PredictProba(
   for (size_t index = 0; index < accumulate.size(); ++index) {
     result[data.GetIdNames()[index]] = accumulate[index] / forest_.size();
   }
+  
+  auto id_names = data.GetIdNames();
+  for (auto el : result) {
+    auto id = std::find(id_names.begin(), id_names.end(), el.first) - id_names.begin();
+    double target = data.GetTargetValues()[id];
+    std::cout << el.first << " " << el.second << " " << target << std::endl;
+  }
+
   return result;
 };
 

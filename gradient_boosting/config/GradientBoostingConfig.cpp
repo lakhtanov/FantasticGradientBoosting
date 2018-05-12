@@ -120,7 +120,7 @@ size_t GradientBoostingConfig::GetNumberOfThreads() const {
 }
 
 size_t GradientBoostingConfig::GetNumberOfTrees() const {
-  return 100;
+  return 1;
 }
 
 size_t GradientBoostingConfig::GetHeight() const {
