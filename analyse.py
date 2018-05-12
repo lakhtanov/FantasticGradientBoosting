@@ -29,8 +29,7 @@ def main():
             predicted.append(d2[key])
         predicted = np.array(predicted).astype(float)
         ys = np.array(ys).astype(int)
-        fpr, tpr, thresholds = metrics.roc_curve(ys, predicted, pos_label=1)
-        print("AUC score is: ", metrics.auc(fpr, tpr))
+        print("AUC score is: ", metrics.roc_auc_score(ys, predicted))
 
 
 if __name__ == "__main__":
