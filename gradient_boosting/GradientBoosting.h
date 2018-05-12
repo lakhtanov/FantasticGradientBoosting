@@ -24,9 +24,9 @@ class GradientBoosting {
   void TestGradientBoosting(const utils::data_containers::DataContainer& data);
   void Fit(const utils::data_containers::DataContainer& data);
   std::unordered_map<std::string, double> PredictProba(
-      const utils::data_containers::DataContainer& data) const;
+      const utils::data_containers::DataContainer& data);
   std::unordered_map<std::string, std::string> PredictClassName(
-      const utils::data_containers::DataContainer& data) const;
+      const utils::data_containers::DataContainer& data);
 
  private:
   void Fit(
@@ -34,13 +34,13 @@ class GradientBoosting {
       data);
   std::unordered_map<std::string, double> PredictProba(
       const gradient_boosting::internal_data_container::InternalDataContainer&
-      data) const;
+      data);
 
   std::vector<double> Predict(
       const gradient_boosting::trees::GradientBoostingTree& tree,
       const gradient_boosting::internal_data_container::InternalDataContainer&
       data,
-      const std::vector<size_t>& objects) const;
+      const std::vector<size_t>& objects);
 
   double EvaluateTree(
       const gradient_boosting::trees::GradientBoostingTree& tree,

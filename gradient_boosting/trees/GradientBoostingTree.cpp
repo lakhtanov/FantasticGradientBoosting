@@ -35,8 +35,12 @@ vector<double> GradientBoostingTree::Predict(
     }
     predictions_futures[test_object_num] =
         thread_pool.push(
-            [&](int) {
-              return Predict(
+            [this,
+                &objects_features,
+                &test_objects,
+                test_object_num
+            ](int) {
+              return this->Predict(
                   objects_features,
                   test_objects[test_object_num]);
             });

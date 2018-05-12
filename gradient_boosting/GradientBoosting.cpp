@@ -117,13 +117,15 @@ unique_ptr<GradientBoostingTree> GetTree(
 vector<double> GradientBoosting::Predict(
     const GradientBoostingTree &tree,
     const InternalDataContainer& data,
-    const vector<size_t>& objects) const {
-  std::vector<double> result;
+    const vector<size_t>& objects) {
+  /*std::vector<double> result;
   result.reserve(objects.size());
   for (auto object : objects) {
     result.push_back(tree.Predict(data.GetObjectsFeatures()[object]));
   }
-  return result;
+  return result;*/
+  //TODO(rialeksandrov) switch to use tree.Predict();
+  return tree.Predict(data.GetObjectsFeatures(), objects, thread_pool_);
 }
 
 double GradientBoosting::EvaluateTree(
@@ -246,13 +248,13 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
-    const DataContainer& data) const {
+    const DataContainer& data) {
   const auto transformed_data = data_transformer_->Transform(data);
   return PredictProba(transformed_data);
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
-    const InternalDataContainer& data) const {
+    const InternalDataContainer& data)  {
   vector<double>accumulate(data.GetNumberOfObject());
   const vector<size_t> all_objects =
       GetNumberedVector(data.GetNumberOfObject());
@@ -271,7 +273,7 @@ unordered_map<string, double> GradientBoosting::PredictProba(
 }
 
 unordered_map<string, string> GradientBoosting::PredictClassName(
-    const DataContainer& data) const {
+    const DataContainer& data) {
   const auto predicted_probs = PredictProba(data);
   unordered_map<string, string> result;
   assert(!data_transformer_->GetTargetNames().empty());
