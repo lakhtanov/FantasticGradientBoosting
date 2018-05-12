@@ -68,18 +68,16 @@ void GradientBoosting::TestGradientBoosting(
                                                 res.GetObjectsFeatures(),
                                                 res.GetTargetValues());
   GradientBoostingTreeOblivious abcd(loss_function, 3);
-  std::cout << "Here we are" << std::endl;
   std::cout << res.GetFeaturesObjects().size() << std::endl;
   std::cout << res.GetObjectsFeatures().size() << std::endl;
   abcd.Fit(res.GetFeaturesObjects(), res.GetObjectsFeatures(), res.GetTargetValues(),
            train_objects, features, thread_pool_);
-  std::cout << "Here we are[3]" << std::endl;
-  //std::cout << res.GetObjectsFeatures().size() << std::endl;
   std::unordered_map<double, size_t> cnt;
   for (size_t index = 0; index < 1 /*res.GetObjectsFeatures().size()*/; ++index) {
     std::cout << abcd.Predict(res.GetObjectsFeatures()[index]) << " " << res.GetTargetValues()[index] << std::endl;
     cnt[abcd.Predict(res.GetObjectsFeatures()[index])]++;
   }
+  std::cout << "GradientBoosting::TestGradientBoosting::predictions" << std::endl;
   for (auto el : cnt ) {
     std::cout << el.first << " " << el.second << std::endl;
   }
@@ -161,12 +159,15 @@ void GradientBoosting::Fit(const DataContainer& data) {
 
 
 void GradientBoosting::Fit(const InternalDataContainer & data) {
+  std::cout << "GradientBoosting::Fit" << std::endl;
+
   std::vector<double> gradient = data.GetTargetValues();
   auto ptr_loss_function = GetLossFunction(config_, data);
 
   size_t number_of_trees_per_tree = std::max(10Ul, size_t(log(data.GetNumberOfObject() + 1.0)));
 
   for (size_t index_tree = 0; index_tree < number_of_trees_; ++index_tree) {
+    std::cout << "GradientBoosting::Fit learning tree #" << index_tree << std::endl;
     vector<pair<double, GradientBoostingTreeOblivious>> trees_to_chose;
     size_t best_index = 0;
     for (size_t t = 0; t < number_of_trees_per_tree; ++t) {
@@ -198,7 +199,7 @@ unordered_map<string, double> GradientBoosting::PredictProba(
   }
   unordered_map<string, double> result;
   for (size_t index = 0; index < accumulate.size(); ++index) {
-    result[data.GetIdNames()[index]] = accumulate[index] / number_of_trees_;
+    result[data.GetIdNames()[index]] = accumulate[index] / forest_.size();
   }
   return result;
 };

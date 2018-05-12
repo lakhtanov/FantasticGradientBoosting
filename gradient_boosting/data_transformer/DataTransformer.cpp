@@ -34,12 +34,10 @@ DataTransformer::DataTransformer(const GradientBoostingConfig& config)
       std::make_unique<ThresholdCreatorByValue>(config.GetNumberOfValueThresholds()));
   creators_.push_back(
       std::make_unique<ThresholdCreatorByStatistics>(config.GetNumberOfValueThresholds()));
-  //std::cout << id_value_name_ << std::endl;
 }
 
 InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data) {
   Fit(data);
-  std::cout << "Fit completed" << std::endl;
   return Transform(data);
 }
 
@@ -53,9 +51,7 @@ void DataTransformer::Fit(const DataContainer& data) {
   FitTargetValue(data, target_value_index);
   vector<string> categorical_buffer(data.rows());
   vector<double> numerical_buffer(data.rows());
-  std::cout << "FitTargetValue completed " << std::endl;
   const vector<double> target_values = GetTargetValues(data, target_value_name_);
-  std::cout << "GetTargetValues completed " << target_values.size() << " " << data.rows() << " "<< target_value_index << std::endl;
   for (size_t index = 0; index < data.columns(); ++index) {
     if (index == target_value_index) {
       continue;
@@ -64,7 +60,6 @@ void DataTransformer::Fit(const DataContainer& data) {
       continue;
     }
     if (data[0][index].IsString()) {
-      std::cout << "No strings " << index << " " << std::endl;
       for (size_t idx = 0; idx < data.rows(); ++idx) {
         categorical_buffer[idx] = data[idx][index].GetString();
       }

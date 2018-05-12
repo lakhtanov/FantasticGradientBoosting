@@ -31,14 +31,11 @@ void GradientBoostingMSELossFunction::Configure(
   vector<double> feature_target_values(
       features_objects_[feature].size(), 0.0);
   vector<size_t> objects_num(features_objects_[feature].size(), 0);
-  // std::cout << "Here we are" << std::endl;
   for (size_t object : objects) {
-    // std::cout << "Here we are " <<  object << " " <<feature << " " << objects_features_.size() << " " << features_objects_.size() << std::endl;
     const size_t object_feature_value = objects_features_[object][feature];
     feature_target_values[object_feature_value] += target_values_[object];
     ++objects_num[object_feature_value];
   }
-  // std::cout << "Here we are" << std::endl;
   objects_prefix_num_sum_.clear();
   objects_prefix_num_sum_.resize(objects_num.size(), 0);
   partial_sum(
@@ -90,13 +87,13 @@ GradientBoostingSplitInfo GradientBoostingMSELossFunction::GetLoss(
           left_split_squares_sum,
           left_split_sum,
           left_split_sum_avg)
-      + log(left_split_size + 1.0)
+      // + log(left_split_size + 1.0)
       + GetLossNode(
           right_split_size,
           right_split_squares_sum,
           right_split_sum,
-          right_split_sum_avg)
-      + log(right_split_size + 1.0);
+          right_split_sum_avg);
+      // + log(right_split_size + 1.0);
   return GradientBoostingSplitInfo(
       loss,
       left_split_size,

@@ -54,10 +54,7 @@ int main(int argc,  char** argv) {
   size_t index = 0;
   for (auto el : res) {
     index++;
-    std::cout << el.first << " " << el.second << std::endl;
-    if (index > 20) {
-      break;
-    }
+    std::cout << el.first << " " << el.second << " " << data[index - 1].back().GetString() << std::endl;
   }
   return 0;
 }

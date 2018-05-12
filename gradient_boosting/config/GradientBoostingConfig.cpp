@@ -53,37 +53,37 @@ unordered_map<string, TaskType> GradientBoostingConfig::GetTaskTypeMapping() con
 }
 
 Verbose GradientBoostingConfig::GetVerbose(const json& config) const {
-  std::cout << "here GetVerbose\n";
+  std::cout << "GradientBoostingConfig::GetVerbose" << std::endl;
   return to_verbose_.at(config.at("Verbose"));
 }
 
 size_t GradientBoostingConfig::GetNumberOfValueThresholds(const json& config) const {
-  std::cout << "here GetNumberOfValueThresholds\n";
+  std::cout << "GradientBoostingConfig::GetNumberOfValueThresholds" << std::endl;
   return config.at("BoostingConfig").at("NumberOfValueThresholds");
 }
 
 size_t GradientBoostingConfig::GetNumberOfStatisticsThresholds(const json& config) const {
-  std::cout << "here GetNumberOfStatisticsThresholds\n";
+  std::cout << "GradientBoostingConfig::GetNumberOfStatisticsThresholds" << std::endl;
   return config.at("BoostingConfig").at("NumberOfStatisticsThresholds");
 }
 
 std::string GradientBoostingConfig::GetTargetValueName(const json& config) const {
-  std::cout << "here GetTargetValueName\n";
+  std::cout << "GradientBoostingConfig::GetTargetValueName" << std::endl;
   return config.at("Experiment").at("TargetValueName");
 }
 
 TaskType GradientBoostingConfig::GetTaskType(const json& config) const {
-  std::cout << "here GetTaskType\n";
+  std::cout << "GradientBoostingConfig::GetTaskType" << std::endl;
   return to_task_type_.at(config.at("BoostingConfig").at("TaskType"));
 }
 
 std::string GradientBoostingConfig::GetTrainData(const json& config) const {
-  std::cout << "here GetTrainData\n" << config.at("Experiment").at("TrainData") << "\n";
+  std::cout << "GradientBoostingConfig::GetTrainData " << config.at("Experiment").at("TrainData") << "\n";
   return config.at("Experiment").at("TrainData");
 }
 
 LossFunction GradientBoostingConfig::GetLossFunction(const json& config) const {
-  std::cout << "here GetLossFunction\n";
+  std::cout << "GradientBoostingConfig::GetLossFunction" << std::endl;
   return to_loss_function_.at(config.at("BoostingConfig").at("LossFunction"));
 }
 
@@ -120,11 +120,11 @@ size_t GradientBoostingConfig::GetNumberOfThreads() const {
 }
 
 size_t GradientBoostingConfig::GetNumberOfTrees() const {
-  return 10;
+  return 100;
 }
 
 size_t GradientBoostingConfig::GetHeight() const {
-  return 3;
+  return 6;
 }
 
 std::string GradientBoostingConfig::GetIdValueName () const {
