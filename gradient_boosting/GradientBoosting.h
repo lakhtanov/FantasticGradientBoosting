@@ -25,10 +25,17 @@ class GradientBoosting {
   std::unordered_map<std::string, std::string> PredictClassName(const utils::data_containers::DataContainer& data) const;
  private:
   void Fit(const gradient_boosting::internal_data_container::InternalDataContainer& data);
+  std::unordered_map<std::string, double> PredictProba(
+      const gradient_boosting::internal_data_container::InternalDataContainer& data) const;
   std::pair<double, gradient_boosting::trees::GradientBoostingTreeOblivious> GetScoreAndTree(
       const gradient_boosting::loss_functions::GradientBoostingLossFunction& loss_function,
-      const gradient_boosting::internal_data_container::InternalDataContainer& data);
+      const gradient_boosting::internal_data_container::InternalDataContainer& data,
+      const std::vector<double>& gradient);
+  void UpdateGradient(std::vector<double>* gradient,
+                      const gradient_boosting::trees::GradientBoostingTreeOblivious &tree,
+                      const gradient_boosting::internal_data_container::InternalDataContainer& data) const;
 
+  double learning_rate_;
   size_t number_of_trees_;
   gradient_boosting::config::GradientBoostingConfig config_;
   ctpl::thread_pool thread_pool_;

@@ -48,7 +48,17 @@ int main(int argc,  char** argv) {
   const auto data = reader.ReadFile();
   std::cout << data.columns() << " " << data.rows() << std::endl;
   gradient_boosting::GradientBoosting gb(gb_config);
-  gb.TestGradientBoosting(data);
+  //gb.TestGradientBoosting(data);
+  gb.Fit(data);
+  auto res = gb.PredictProba(data);
+  size_t index = 0;
+  for (auto el : res) {
+    index++;
+    std::cout << el.first << " " << el.second << std::endl;
+    if (index > 20) {
+      break;
+    }
+  }
   return 0;
 }
 

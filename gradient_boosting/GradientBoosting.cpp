@@ -1,10 +1,10 @@
-#include "gradient_boosting/GradientBoosting.h"
-
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <algorithm>
+
+#include "gradient_boosting/GradientBoosting.h"
 #include <gradient_boosting/data_transformer/DataTransformer.h>
 #include <gradient_boosting/trees/GradientBoostingTreeOblivious.h>
 #include <gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h>
@@ -16,6 +16,7 @@ using std::unordered_map;
 using std::unique_ptr;
 using std::string;
 using std::vector;
+using std::pair;
 
 using InternalDataContainer = gradient_boosting::internal_data_container::InternalDataContainer;
 using GradientBoostingLossFunction = gradient_boosting::loss_functions::GradientBoostingLossFunction;
@@ -30,6 +31,7 @@ GradientBoosting::GradientBoosting(
     : config_(config)
     , thread_pool_(config.GetNumberOfThreads())
     , number_of_trees_(config.GetNumberOfTrees())
+    , learning_rate_(config.GetLearningRate())
 {
 }
 
@@ -97,10 +99,11 @@ unique_ptr<GradientBoostingLossFunction> GetLossFunction(const GradientBoostingC
 
 std::vector<double> Predict(const GradientBoostingTreeOblivious &tree,
                             const InternalDataContainer& data,
-                            vector<size_t> objects) {
+                            const vector<size_t>& objects) {
   std::vector<double> result;
-  for (auto index : objects) {
-    result.push_back(tree.Predict(data.GetObjectsFeatures()[index]));
+  result.reserve(objects.size());
+  for (auto object : objects) {
+    result.push_back(tree.Predict(data.GetObjectsFeatures()[object]));
   }
   return result;
 }
@@ -108,19 +111,20 @@ std::vector<double> Predict(const GradientBoostingTreeOblivious &tree,
 double EvaluateTree(const GradientBoostingTreeOblivious &tree,
                     const GradientBoostingLossFunction& loss_function,
                     const InternalDataContainer& data,
-                    vector<size_t> objects) {
+                    const vector<size_t>& objects) {
   auto predicted_targets = Predict(tree, data, objects);
   double sum = 0.0;
   for (size_t index = 0; index < objects.size(); ++index){
-    sum = loss_function.GetLoss(predicted_targets[index], data.GetTargetValues()[index]);
+    sum = loss_function.GetLoss(predicted_targets[index], data.GetTargetValues()[objects[index]]);
   }
   return sum;
 }
 
 
-std::pair<double, GradientBoostingTreeOblivious> GradientBoosting::GetScoreAndTree(
+pair<double, GradientBoostingTreeOblivious> GradientBoosting::GetScoreAndTree(
     const GradientBoostingLossFunction& loss_function,
-    const InternalDataContainer& data) {
+    const InternalDataContainer& data,
+    const vector<double>& gradient) {
 
   size_t min_number_of_object = std::min(1000Ul, data.GetNumberOfObject());
   size_t sample_size = std::max(min_number_of_object,
@@ -131,13 +135,22 @@ std::pair<double, GradientBoostingTreeOblivious> GradientBoosting::GetScoreAndTr
   GradientBoostingTreeOblivious best_tree(loss_function, config_.GetHeight());
   best_tree.Fit(data.GetFeaturesObjects(),
                 data.GetObjectsFeatures(),
-                data.GetTargetValues(),
+                gradient,
                 objects,
                 GetNumberedVector(data.GetNumberOfFeatures()),
                 thread_pool_);
   std::vector<size_t> objects_to_evaluate = GetNumberedVector(data.GetNumberOfObject());
   double best_res = EvaluateTree(best_tree, loss_function, data, objects_to_evaluate);
   return {best_res, best_tree};
+}
+
+void GradientBoosting::UpdateGradient(vector<double>* gradient,
+                                      const GradientBoostingTreeOblivious &tree,
+                                      const InternalDataContainer& data) const {
+  auto prediction = Predict(tree, data, GetNumberedVector(data.GetNumberOfObject()));
+  for(size_t index = 0; index < prediction.size(); ++index) {
+    (*gradient)[index] -= learning_rate_ * prediction[index];
+  }
 }
 
 void GradientBoosting::Fit(const DataContainer& data) {
@@ -148,33 +161,53 @@ void GradientBoosting::Fit(const DataContainer& data) {
 
 
 void GradientBoosting::Fit(const InternalDataContainer & data) {
-  std::vector<double> current_gradient = data.GetTargetValues();
+  std::vector<double> gradient = data.GetTargetValues();
   auto ptr_loss_function = GetLossFunction(config_, data);
 
   size_t number_of_trees_per_tree = std::max(10Ul, size_t(log(data.GetNumberOfObject() + 1.0)));
 
   for (size_t index_tree = 0; index_tree < number_of_trees_; ++index_tree) {
-    auto best_score = GetScoreAndTree(*ptr_loss_function, data);
-    for (size_t t = 1; t < number_of_trees_per_tree; ++t) {
-      auto score = GetScoreAndTree(*ptr_loss_function, data);
-      if (score.first < best_score.first) {
-        best_score.first = score.first;
-        best_score.second = score.second;
+    vector<pair<double, GradientBoostingTreeOblivious>> trees_to_chose;
+    size_t best_index = 0;
+    for (size_t t = 0; t < number_of_trees_per_tree; ++t) {
+      trees_to_chose.push_back(GetScoreAndTree(*ptr_loss_function, data, gradient));
+      if (trees_to_chose[t].first < trees_to_chose[best_index].first) {
+        best_index = t;
       }
     }
-
-    forest_.push_back(best_score.second);
+    UpdateGradient(&gradient, trees_to_chose[best_index].second, data);
+    forest_.push_back(trees_to_chose[best_index].second);
   }
-
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
     const DataContainer& data) const {
-  return {};
+  auto transformed_data = data_transformer_->Transform(data);
+  return PredictProba(transformed_data);
 };
+
+
+unordered_map<string, double> GradientBoosting::PredictProba(
+    const InternalDataContainer& data) const {
+  vector<double>accumulate(data.GetNumberOfObject());
+  for(const auto& tree : forest_) {
+    auto target_values = Predict(tree, data, GetNumberedVector(data.GetNumberOfObject()));
+    for (size_t index = 0; index < accumulate.size(); ++index) {
+      accumulate[index] += target_values[index];
+    }
+  }
+  unordered_map<string, double> result;
+  for (size_t index = 0; index < accumulate.size(); ++index) {
+    result[data.GetIdNames()[index]] = accumulate[index] / number_of_trees_;
+  }
+  return result;
+};
+
 unordered_map<string, string> GradientBoosting::PredictClassName(
     const utils::data_containers::DataContainer& data) const {
-  return {};
+  return {}; // ? do we need this?
 };
+
+
 
 }  // namespace gradient_boosting

@@ -164,13 +164,13 @@ void GradientBoostingTreeOblivious::Fit(
     const auto& best_feature_split_infos =
         features_best_splits[best_feature].second.second;
     for (size_t node = 0; node < best_feature_split_infos.size(); ++node) {
-      std::cout << node << " " << first_height_num + node << " " << best_feature_split_infos.size() <<std::endl;
+      //std::cout << node << " " << first_height_num + node << " " << best_feature_split_infos.size() <<std::endl;
       nodes_values_[GetLeftChildNum(first_height_num + node)] =
           best_feature_split_infos[node].left_split_value;
       nodes_values_[GetRightChildNum(first_height_num + node)] =
           best_feature_split_infos[node].right_split_value;
-      std::cout <<best_feature_split_infos[node].left_split_size << " "
-                << best_feature_split_infos[node].right_split_size << std::endl;
+      //std::cout <<best_feature_split_infos[node].left_split_size << " "
+      //          << best_feature_split_infos[node].right_split_size << std::endl;
     }
 
     vector<vector<size_t>> objects_in_nodes_next_level;
@@ -194,10 +194,10 @@ void GradientBoostingTreeOblivious::Fit(
 
 double GradientBoostingTreeOblivious::Predict(
     const vector<size_t>& test_object_features) const {
-  for (auto el : nodes_values_) {
+  /*for (auto el : nodes_values_) {
     std::cout << el << " ";
   }
-  std::cout << std::endl;
+  std::cout << std::endl;*/
   size_t node_num = 0;
   for (size_t h = 0; h < height_; ++h) {
     if (test_object_features[features_[h]] <= features_split_values_[h]) {

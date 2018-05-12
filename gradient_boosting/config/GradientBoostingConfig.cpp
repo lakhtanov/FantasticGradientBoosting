@@ -127,5 +127,13 @@ size_t GradientBoostingConfig::GetHeight() const {
   return 3;
 }
 
+std::string GradientBoostingConfig::GetIdValueName () const {
+  return "EventId";
+}
+
+double GradientBoostingConfig::GetLearningRate() const {
+  return 0.001;
+}
+
 }  // namespace config
 }  // namespace gradient_boosting

@@ -28,11 +28,13 @@ using GradientBoostingConfig = gradient_boosting::config::GradientBoostingConfig
 
 DataTransformer::DataTransformer(const GradientBoostingConfig& config)
     : target_value_name_(config.GetTargetValueName())
+    , id_value_name_(config.GetIdValueName())
     , task_type_(config.GetTaskType()) {
   creators_.push_back(
       std::make_unique<ThresholdCreatorByValue>(config.GetNumberOfValueThresholds()));
   creators_.push_back(
       std::make_unique<ThresholdCreatorByStatistics>(config.GetNumberOfValueThresholds()));
+  //std::cout << id_value_name_ << std::endl;
 }
 
 InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data) {
@@ -56,6 +58,9 @@ void DataTransformer::Fit(const DataContainer& data) {
   std::cout << "GetTargetValues completed " << target_values.size() << " " << data.rows() << " "<< target_value_index << std::endl;
   for (size_t index = 0; index < data.columns(); ++index) {
     if (index == target_value_index) {
+      continue;
+    }
+    if (data.GetNames()[index] == id_value_name_) {
       continue;
     }
     if (data[0][index].IsString()) {
@@ -152,8 +157,15 @@ InternalDataContainer DataTransformer::Transform(const DataContainer& data) cons
   vector<string> categorical_buffer(data.rows());
   vector<double> numerical_buffer(data.rows());
   const auto res = FindTargetValueIndex(data, target_value_name_);
+  vector<std::string> id_names(data.rows());
   for (size_t index = 0; index < data.columns(); ++index) {
     if (res.first && index == res.second) {
+      continue;
+    }
+    if (data.GetNames()[index] == id_value_name_) {
+      for (size_t idx = 0; idx < data.rows(); ++idx) {
+        id_names[idx] = data[idx][index].GetString();
+      }
       continue;
     }
     if (data[0][index].IsString()) {
@@ -170,7 +182,7 @@ InternalDataContainer DataTransformer::Transform(const DataContainer& data) cons
     }
   }
   const auto target_values = GetTargetValues(data, target_value_name_);
-  return InternalDataContainer(feature_object, target_values, data.GetNames());
+  return InternalDataContainer(feature_object, target_values, data.GetNames(), id_names);
 }
 
 vector<size_t> DataTransformer::TransformCategorical(size_t index,
