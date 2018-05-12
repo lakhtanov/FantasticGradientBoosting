@@ -3,7 +3,6 @@
 
 #include "gradient_boosting/internal_data_container/InternalDataContainer.h"
 
-
 namespace gradient_boosting {
 namespace internal_data_container {
 
@@ -28,10 +27,11 @@ InternalDataContainer::InternalDataContainer(
     const vector<string>& features_names,
     const vector<string>& id_names)
     : features_objects_(features_objects)
-    , target_values_(target_values)
     , features_names_(features_names)
-    , id_names_(id_names){
-  objects_features_.assign(features_objects.front().size(), vector<size_t>(features_objects.size()));
+    , target_values_(target_values)
+    , id_names_(id_names) {
+  objects_features_.assign(
+      features_objects.front().size(), vector<size_t>(features_objects.size()));
   for (size_t index = 0; index < features_objects.size(); ++index) {
     for (size_t jindex = 0; jindex < features_objects[index].size(); ++jindex) {
       objects_features_[jindex][index] = features_objects[index][jindex];
@@ -47,11 +47,13 @@ size_t InternalDataContainer::GetNumberOfFeatures() const {
   return features_objects_.size();
 }
 
-const vector<vector<size_t>>& InternalDataContainer::GetFeaturesObjects() const {
+const vector<vector<size_t>>&
+InternalDataContainer::GetFeaturesObjects() const {
   return features_objects_;
 }
 
-const vector<vector<size_t>>& InternalDataContainer::GetObjectsFeatures() const {
+const vector<vector<size_t>>&
+InternalDataContainer::GetObjectsFeatures() const {
   return objects_features_;
 }
 

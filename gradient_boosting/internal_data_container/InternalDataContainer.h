@@ -9,16 +9,19 @@ namespace internal_data_container {
 
 class InternalDataContainer {
  public:
-  InternalDataContainer(const std::vector<std::vector<size_t>>& features_objects,
-                        const std::vector<std::string>& features_names);
+  InternalDataContainer(
+      const std::vector<std::vector<size_t>>& features_objects,
+      const std::vector<std::string>& features_names);
 
-  InternalDataContainer(const std::vector<std::vector<size_t>>& features_objects,
-                        const std::vector<double>& target_values);
+  InternalDataContainer(
+      const std::vector<std::vector<size_t>>& features_objects,
+      const std::vector<double>& target_values);
 
-  InternalDataContainer(const std::vector<std::vector<size_t>>& features_objects,
-                        const std::vector<double>& target_values,
-                        const std::vector<std::string>& features_names,
-                        const std::vector<std::string>& id_names);
+  InternalDataContainer(
+      const std::vector<std::vector<size_t>>& features_objects,
+      const std::vector<double>& target_values,
+      const std::vector<std::string>& features_names,
+      const std::vector<std::string>& id_names);
 
   size_t GetNumberOfObject() const;
   size_t GetNumberOfFeatures() const;

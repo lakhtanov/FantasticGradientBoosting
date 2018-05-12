@@ -18,5 +18,4 @@ class SimpleCSVReader final : public CSVReaderBase {
 }  // namespace io
 }  // namespace utils
 
-
 #endif  // UTILS_IO_SIMPLECSVREADER_H_

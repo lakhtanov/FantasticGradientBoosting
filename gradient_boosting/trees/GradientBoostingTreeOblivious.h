@@ -18,8 +18,8 @@ class GradientBoostingTreeOblivious : public GradientBoostingTree {
       size_t height);
   void Fit(
       const std::vector<std::vector<size_t>>& features_objects,
-      const std::vector<std::vector<size_t>>& objects_features,
-      const std::vector<double>& target_values,
+      const std::vector<std::vector<size_t>>&,
+      const std::vector<double>&,
       const std::vector<size_t>& train_objects,
       const std::vector<size_t>& train_features,
       ctpl::thread_pool& thread_pool) override;
