@@ -4,21 +4,21 @@
         "LossFunction": "MSE",
         "NumberOfStatisticsThresholds": 32,
         "NumberOfThreads": 4,
-        "NumberOfTrees": 100,
+        "NumberOfTrees": 10,
         "NumberOfValueThresholds": 32,
         "TaskType": "Classification",
         "TreeHeight": 6,
         "TreeType": "ObliviousTree"
     },
     "Experiment": {
-        "Data": "./experiments/higgs/sample.csv",
+        "Data": "./experiments/higgs/training.csv",
         "IdName": "EventId",
         "ResultFile": "./experiments/higgs/result.csv",
+        "SplitSize": 0.5,
         "TargetValueName": "Label",
-        "TestData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test.csv",
-        "TestDataLabels": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test_y.csv",
-        "TrainData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_train.csv",
-        "SplitSize" : 0.5
+        "TestData": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_test.csv",
+        "TestDataLabels": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_test_y.csv",
+        "TrainData": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_train.csv"
     },
     "Verbose": "v1"
 }

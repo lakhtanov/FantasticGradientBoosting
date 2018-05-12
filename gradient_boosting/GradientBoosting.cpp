@@ -153,7 +153,11 @@ GradientBoosting::GetScoreAndTree(
           size_t{15},
           data.GetNumberOfFeatures());
   pair<double, unique_ptr<GradientBoostingTree>> result;
-  result.second = GetTree(config_, loss_function);
+  GradientBoostingMSELossFunction loss_function_gradient(
+      data.GetFeaturesObjects(),
+      data.GetObjectsFeatures(),
+      gradient);
+  result.second = GetTree(config_, loss_function_gradient);
   const vector<size_t> objects = GetSample(all_object, num_sample_object);
   const vector<size_t> features = GetSample(all_features, num_sample_features);
   result.second->Fit(
@@ -163,7 +167,7 @@ GradientBoosting::GetScoreAndTree(
       objects,
       features,
       thread_pool_);
-  result.first = EvaluateTree(*result.second, loss_function, data, all_object);
+  result.first = EvaluateTree(*result.second, loss_function_gradient, data, all_object);
   return result;
 }
 
