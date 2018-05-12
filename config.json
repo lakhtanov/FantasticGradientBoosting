@@ -1,21 +1,22 @@
 {
-  "Verbose" : "v1",
-  "BoostingConfig" : {
-    "NumberOfValueThresholds" : 32,
-    "NumberOfStatisticsThresholds" : 32,
-    "LossFunction" : "MSE",
-    "TaskType" : "Classification",
-    "NumberOfThreads" : 2,
-    "NumberOfTrees" : 150,
-    "TreeHeight" : 6,
-    "LearningRate" : 0.001,
-    "TreeType" : "ObliviousTree"
-  },
-  "Experiment" : {
-    "TrainData" : "./experiments/higgs/sample.csv",
-    "TestData" : "./experiments/higgs/sample.csv",
-    "ResultFile" : "./experiments/higgs/result.csv",
-    "TargetValueName" : "Label",
-    "IdName" : "EventId"
-  }
+    "BoostingConfig": {
+        "LearningRate": 0.001,
+        "LossFunction": "MSE",
+        "NumberOfStatisticsThresholds": 32,
+        "NumberOfThreads": 0,
+        "NumberOfTrees": 2,
+        "NumberOfValueThresholds": 32,
+        "TaskType": "Classification",
+        "TreeHeight": 6,
+        "TreeType": "ObliviousTree"
+    },
+    "Experiment": {
+        "Data": "./experiments/higgs/sample.csv",
+        "IdName": "EventId",
+        "ResultFile": "./experiments/higgs/result.csv",
+        "TargetValueName": "Label",
+        "TestData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test.csv",
+        "TrainData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_train.csv"
+    },
+    "Verbose": "v1"
 }
