@@ -8,32 +8,40 @@
 #include "gradient_boosting/binarization/ThresholdCreatorByValue.h"
 #include "gradient_boosting/data_transformer/DataTransformer.h"
 
-
 namespace gradient_boosting {
 namespace data_transformer {
 
+using std::make_unique;
 using std::string;
 using std::vector;
 
-using CategoricalConverter = gradient_boosting::categories::CategoricalConverter;
-
+using CategoricalConverter =
+    gradient_boosting::categories::CategoricalConverter;
 using DataContainer = utils::data_containers::DataContainer;
+using GradientBoostingConfig =
+    gradient_boosting::config::GradientBoostingConfig;
+using InternalDataContainer =
+    gradient_boosting::internal_data_container::InternalDataContainer;
 using ThresholdContainer = gradient_boosting::binarization::ThresholdContainer;
-using ThresholdCreatorByStatistics = gradient_boosting::binarization::ThresholdCreatorByStatistics;
-using ThresholdCreatorByValue = gradient_boosting::binarization::ThresholdCreatorByValue;
-using InternalDataContainer = gradient_boosting::internal_data_container::InternalDataContainer;
-using GradientBoostingConfig = gradient_boosting::config::GradientBoostingConfig;
+using ThresholdCreatorByStatistics =
+    gradient_boosting::binarization::ThresholdCreatorByStatistics;
+using ThresholdCreatorByValue =
+    gradient_boosting::binarization::ThresholdCreatorByValue;
 
 DataTransformer::DataTransformer(const GradientBoostingConfig& config)
     : target_value_name_(config.GetTargetValueName())
+    , id_value_name_(config.GetIdValueName())
     , task_type_(config.GetTaskType()) {
   creators_.push_back(
-      std::make_unique<ThresholdCreatorByValue>(config.GetNumberOfValueThresholds()));
+      make_unique<ThresholdCreatorByValue>(
+          config.GetNumberOfValueThresholds()));
   creators_.push_back(
-      std::make_unique<ThresholdCreatorByStatistics>(config.GetNumberOfValueThresholds()));
+      make_unique<ThresholdCreatorByStatistics>(
+          config.GetNumberOfValueThresholds()));
 }
 
-InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data) {
+InternalDataContainer DataTransformer::FitAndTransform(
+    const DataContainer& data) {
   Fit(data);
   return Transform(data);
 }
@@ -41,16 +49,23 @@ InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data
 void DataTransformer::Fit(const DataContainer& data) {
   containers_.clear();
   converters_.clear();
+  target_values_converter_ = nullptr;
+  target_value_to_name_.clear();
+
   assert(task_type_ == GradientBoostingConfig::TaskType::Classification);
   const auto res = FindTargetValueIndex(data, target_value_name_);
   assert(res.first);
-  size_t target_value_index = res.second;
+  const size_t target_value_index = res.second;
   FitTargetValue(data, target_value_index);
-  vector<string> categorical_buffer(data.columns());
-  vector<double> numerical_buffer(data.columns());
-  const vector<double> target_values = GetTargetValues(data, target_value_name_);
+  vector<string> categorical_buffer(data.rows());
+  vector<double> numerical_buffer(data.rows());
+  const vector<double> target_values =
+      GetTargetValues(data, target_value_name_);
   for (size_t index = 0; index < data.columns(); ++index) {
-    if (index == target_value_index_) {
+    if (index == target_value_index) {
+      continue;
+    }
+    if (data.GetNames()[index] == id_value_name_) {
       continue;
     }
     if (data[0][index].IsString()) {
@@ -68,23 +83,28 @@ void DataTransformer::Fit(const DataContainer& data) {
   }
 }
 
-void DataTransformer::FitTargetValue(const DataContainer& data,
-                                     size_t target_value_index) {
+void DataTransformer::FitTargetValue(
+    const DataContainer& data, size_t target_value_index) {
   if (data[0][target_value_index].IsDouble()) {
     return;
   }
   vector<string> categorical_buffer(data.rows());
-  for (size_t index = 0; index < data.columns(); ++index) {
+  for (size_t index = 0; index < data.rows(); ++index) {
     categorical_buffer[index] = data[index][target_value_index].GetString();
   }
   target_values_converter_ =
-      std::make_unique<gradient_boosting::categories::CategoricalContainer>(
+      make_unique<gradient_boosting::categories::CategoricalContainer>(
           categorical_buffer);
+  for (size_t index = 0; index < data.rows(); ++index) {
+    const auto& name = data[index][target_value_index].GetString();
+    auto result = target_values_converter_->GetId(name);
+    assert(result.first);
+    target_value_to_name_[result.second] = name;
+  }
 }
 
 std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(
-    const DataContainer& data,
-    const string& target_value_name_) const {
+    const DataContainer& data, const string& target_value_name_) const {
   size_t target_value_index = data.columns();
   size_t matched = 0;
   for (size_t index = 0; index < data.GetNames().size(); ++index) {
@@ -98,8 +118,8 @@ std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(
   return {target_value_index != data.columns(), target_value_index};
 }
 
-vector<double> DataTransformer::GetTargetValues(const DataContainer& data,
-                                                 const string& target_value_name_) const {
+vector<double> DataTransformer::GetTargetValues(
+    const DataContainer& data, const string& target_value_name_) const {
   const auto result = FindTargetValueIndex(data, target_value_name_);
   if (!result.first) {
     return {};
@@ -111,8 +131,10 @@ vector<double> DataTransformer::GetTargetValues(const DataContainer& data,
       target_values[index] = data[index][target_value_index].GetDouble();
     }
   } else {
-    for (size_t index = 0; index < data.columns(); ++index) {
-      const auto res = target_values_converter_->GetId(data[index][target_value_index].GetString());
+    for (size_t index = 0; index < data.rows(); ++index) {
+      const auto res =
+          target_values_converter_->GetId(
+              data[index][target_value_index].GetString());
       assert(res.first);
       target_values[index] = res.second;
     }
@@ -120,9 +142,10 @@ vector<double> DataTransformer::GetTargetValues(const DataContainer& data,
   return target_values;
 }
 
-void DataTransformer::FitCategorical(size_t index,
-                                     const vector<string>& features,
-                                     const vector<double>& target_values) {
+void DataTransformer::FitCategorical(
+    size_t index,
+    const vector<string>& features,
+    const vector<double>& target_values) {
   if (task_type_ == GradientBoostingConfig::TaskType::Classification) {
     vector<size_t> classes;
     classes.reserve(target_values.size());
@@ -132,20 +155,38 @@ void DataTransformer::FitCategorical(size_t index,
     }
     converters_.insert({index, CategoricalConverter(features, classes)});
     FitNumerical(index, converters_.at(index).GetConversionResult());
+  } else {
+    assert(false);
   }
-  assert(false);
 }
 
-void DataTransformer::FitNumerical(size_t index,
-                                   const vector<double>& features) {
+void DataTransformer::FitNumerical(
+    size_t index, const vector<double>& features) {
   containers_.insert({index, ThresholdContainer(creators_, features)});
 }
 
-InternalDataContainer DataTransformer::Transform(const DataContainer& data) const {
+const std::unordered_map<size_t, string>&
+DataTransformer::GetTargetNames() const {
+  return target_value_to_name_;
+}
+
+InternalDataContainer
+DataTransformer::Transform(const DataContainer& data) const {
   vector<vector<size_t>> feature_object;
-  vector<string> categorical_buffer(data.columns());
-  vector<double> numerical_buffer(data.columns());
+  vector<string> categorical_buffer(data.rows());
+  vector<double> numerical_buffer(data.rows());
+  const auto res = FindTargetValueIndex(data, target_value_name_);
+  vector<string> id_names(data.rows());
   for (size_t index = 0; index < data.columns(); ++index) {
+    if (res.first && index == res.second) {
+      continue;
+    }
+    if (data.GetNames()[index] == id_value_name_) {
+      for (size_t idx = 0; idx < data.rows(); ++idx) {
+        id_names[idx] = data[idx][index].GetString();
+      }
+      continue;
+    }
     if (data[0][index].IsString()) {
       for (size_t idx = 0; idx < data.rows(); ++idx) {
         categorical_buffer[idx] = data[idx][index].GetString();
@@ -160,12 +201,14 @@ InternalDataContainer DataTransformer::Transform(const DataContainer& data) cons
     }
   }
   const auto target_values = GetTargetValues(data, target_value_name_);
-  return InternalDataContainer(feature_object, target_values, data.GetNames());
+  return
+      InternalDataContainer(
+          feature_object, target_values, data.GetNames(), id_names);
 }
 
-vector<size_t> DataTransformer::TransformCategorical(size_t index,
-                                                     const vector<string>& features) const {
-  std::vector<double> probs;
+vector<size_t> DataTransformer::TransformCategorical(
+    size_t index, const vector<string>& features) const {
+  vector<double> probs;
   probs.reserve(features.size());
   for (const auto& feature : features) {
     probs.emplace_back(converters_.at(index).Convert(feature));
@@ -173,8 +216,8 @@ vector<size_t> DataTransformer::TransformCategorical(size_t index,
   return TransformNumerical(index, probs);
 }
 
-vector<size_t> DataTransformer::TransformNumerical(size_t index,
-                                                   const vector<double>& features) const {
+vector<size_t> DataTransformer::TransformNumerical(
+    size_t index, const vector<double>& features) const {
   vector<size_t> result;
   result.reserve(features.size());
   for (const auto& feature : features) {

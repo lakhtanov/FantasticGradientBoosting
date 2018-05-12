@@ -16,7 +16,10 @@ class GradientBoostingLossFunction {
       const std::vector<std::vector<size_t>>& objects_features,
       const std::vector<double>& target_values);
   virtual std::unique_ptr<GradientBoostingLossFunction> Clone() const = 0;
-  virtual void Configure(size_t feature, const std::vector<size_t>& objects);
+  virtual void Configure(
+      size_t feature,
+      size_t num_feature_values,
+      const std::vector<size_t>& objects);
   virtual size_t GetLeftSplitSize(size_t feature_split_value) const;
   static double GetLoss(
       const GradientBoostingLossFunction& loss_function,
@@ -25,10 +28,11 @@ class GradientBoostingLossFunction {
   virtual GradientBoostingSplitInfo GetLoss(
       size_t feature_split_value) const = 0;
   virtual size_t GetRightSplitSize(size_t feature_split_value) const;
- protected:
   virtual double GetLoss(double value, double target_value) const = 0;
-
+  virtual ~GradientBoostingLossFunction() = default;
+ protected:
   size_t feature_;
+  size_t num_feature_values_;
   const std::vector<std::vector<size_t>>& features_objects_;
   std::vector<size_t> objects_;
   const std::vector<std::vector<size_t>>& objects_features_;

@@ -12,9 +12,10 @@ namespace data_containers {
 class DataContainer {
  public:
   explicit DataContainer(const std::vector<std::vector<std::string>>& table);
-  DataContainer(const std::vector<std::string>& names,
-                const std::vector<std::vector<std::string>>& table);
-  const std::vector<ElementContainer>& operator [] (size_t index) const;
+  DataContainer(
+      const std::vector<std::string>& names,
+      const std::vector<std::vector<std::string>>& table);
+  const std::vector<ElementContainer>& operator[](size_t index) const;
   const std::vector<std::string>& GetNames() const;
   size_t columns() const;
   size_t rows() const;
@@ -38,6 +39,5 @@ class DataValidator {
 
 }  // namespace data_containers
 }  // namespace utils
-
 
 #endif  // UTILS_DATA_CONTAINERS_DATACONTAINER_H_

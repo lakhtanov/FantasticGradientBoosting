@@ -25,5 +25,4 @@ class ElementContainer {
 }  // namespace data_containers
 }  // namespace utils
 
-
 #endif  // UTILS_DATA_CONTAINERS_ELEMENTCONTAINER_H_

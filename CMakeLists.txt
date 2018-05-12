@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 project(FantasticGradientBoosting)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O1")
 
 SET(BASEPATH "${CMAKE_SOURCE_DIR}")
 INCLUDE_DIRECTORIES("${BASEPATH}")
@@ -24,6 +31,7 @@ set(HEADER_FILES
 		utils/data_containers/ElementContainer.h
 		utils/data_containers/DataContainer.h
 		utils/io/CSVReaderBase.h
+		utils/io/ResultDumper.h
 		utils/io/SimpleCSVReader.h)
 
 set(SOURCE_FILES
@@ -46,6 +54,7 @@ set(SOURCE_FILES
 		utils/data_containers/ElementContainer.cpp
 		utils/data_containers/DataContainer.cpp
 		utils/io/CSVReaderBase.cpp
+		utils/io/ResultDumper.cpp
 		utils/io/SimpleCSVReader.cpp)
 
 add_executable(FantasticGradientBoosting ${HEADER_FILES} ${SOURCE_FILES})

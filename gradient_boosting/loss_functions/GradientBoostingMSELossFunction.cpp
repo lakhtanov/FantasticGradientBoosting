@@ -1,9 +1,12 @@
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <memory>
 #include <numeric>
+#include <iostream>
 
 #include "gradient_boosting/loss_functions/GradientBoostingMSELossFunction.h"
+#include "gradient_boosting/loss_functions/GradientBoostingSplitInfo.h"
 
 namespace gradient_boosting {
 namespace loss_functions {
@@ -23,18 +26,20 @@ std::unique_ptr<GradientBoostingLossFunction>
 
 void GradientBoostingMSELossFunction::Configure(
     size_t feature,
+    size_t num_feature_values,
     const vector<size_t>& objects) {
-  GradientBoostingLossFunction::Configure(feature, objects);
+  GradientBoostingLossFunction::Configure(feature, num_feature_values, objects);
 
-  vector<double> feature_target_values(
-      features_objects_[feature].size(), 0.0);
-  vector<size_t> objects_num(features_objects_[feature].size(), 0);
+  vector<double> feature_target_values(num_feature_values_, 0.0);
+  vector<double> feature_target_square_values(num_feature_values_, 0.0);
+  vector<size_t> objects_num(num_feature_values_, 0);
   for (size_t object : objects) {
     const size_t object_feature_value = objects_features_[object][feature];
     feature_target_values[object_feature_value] += target_values_[object];
+    feature_target_square_values[object_feature_value] +=
+        target_values_[object] * target_values_[object];
     ++objects_num[object_feature_value];
   }
-
   objects_prefix_num_sum_.clear();
   objects_prefix_num_sum_.resize(objects_num.size(), 0);
   partial_sum(
@@ -43,12 +48,12 @@ void GradientBoostingMSELossFunction::Configure(
       objects_prefix_num_sum_.begin());
 
   target_values_prefix_squares_sum_.clear();
-  target_values_prefix_squares_sum_.resize(feature_target_values.size());
+  target_values_prefix_squares_sum_.resize(
+      feature_target_square_values.size(), 0);
   partial_sum(
-      feature_target_values.begin(),
-      feature_target_values.end(),
-      target_values_prefix_squares_sum_.begin(),
-      [](double a, double b) { return a + b * b; });
+      feature_target_square_values.begin(),
+      feature_target_square_values.end(),
+      target_values_prefix_squares_sum_.begin());
 
   target_values_prefix_sum_.clear();
   target_values_prefix_sum_.resize(feature_target_values.size());
@@ -86,14 +91,13 @@ GradientBoostingSplitInfo GradientBoostingMSELossFunction::GetLoss(
           left_split_squares_sum,
           left_split_sum,
           left_split_sum_avg)
-      + log(left_split_size + 1.0)
+      // + log(left_split_size + 1.0)
       + GetLossNode(
           right_split_size,
           right_split_squares_sum,
           right_split_sum,
-          right_split_sum_avg)
-      + log(right_split_size + 1.0);
-
+          right_split_sum_avg);
+      // + log(right_split_size + 1.0);*/
   return GradientBoostingSplitInfo(
       loss,
       left_split_size,

@@ -10,14 +10,15 @@ namespace categories {
 using std::string;
 using std::vector;
 
-CategoricalConverter::CategoricalConverter(const vector<string>& features,
-                                           const vector<size_t>& class_ids)
+CategoricalConverter::CategoricalConverter(
+    const vector<string>& features, const vector<size_t>& class_ids)
     : container_(features)
     , lambda_(log(features.size() + 2)) {
   if (class_ids.empty()) {
     default_probability_ = 0.5;
   } else {
-    const size_t number_of_classes = (*std::max_element(class_ids.begin(), class_ids.end())) + 1;
+    const size_t number_of_classes =
+        (*std::max_element(class_ids.begin(), class_ids.end())) + 1;
     assert(number_of_classes <= 2 && features.size() == class_ids.size());
     features_count_.resize(container_.Size());
     conversion_result_.resize(container_.Size());
@@ -29,7 +30,8 @@ CategoricalConverter::CategoricalConverter(const vector<string>& features,
       default_probability_+= class_ids[index];
       conversion_result_[index] = Convert(id);
     }
-    default_probability_ = (default_probability_ + lambda_ / 2.0) / (class_ids.size() + lambda_);
+    default_probability_
+        = (default_probability_ + lambda_ / 2.0) / (class_ids.size() + lambda_);
   }
 }
 
