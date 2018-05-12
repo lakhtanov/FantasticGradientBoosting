@@ -145,8 +145,8 @@ GradientBoostingSplitInfo GradientBoostingMSELossFunction::GetLoss(
       // + log(right_split_size + 1.0);*/
   // std::cout << "left_split_sum_avg " << left_split_sum_avg << " " << cleft_split_sum_avg << std::endl;
   // std::cout << "right_split_sum_avg " << right_split_sum_avg << " " << cright_split_sum_avg << std::endl;
-  std::cout << "left_split_sum_square " << left_split_squares_sum << " " << cleft_split_sum_square << std::endl;
-  std::cout << "right_split_sum_square " << right_split_squares_sum << " " << cright_split_sum_square << std::endl;
+  // std::cout << "left_split_sum_square " << left_split_squares_sum << " " << cleft_split_sum_square << std::endl;
+  // std::cout << "right_split_sum_square " << right_split_squares_sum << " " << cright_split_sum_square << std::endl;
   /* std::cout << "GradientBoostingMSELossFunction::GetLoss num_objects" << objects_.size() << std::endl;
   std::cout << "GradientBoostingMSELossFunction::GetLoss left_split_size" << cleft_split_size << " " << left_split_size << std::endl;
   std::cout << "GradientBoostingMSELossFunction::GetLoss right_split_size" << cright_split_size << " " << right_split_size << std::endl;
