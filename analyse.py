@@ -14,12 +14,14 @@ def main():
         result = pd.read_csv(config["Experiment"]["ResultFile"])
         id = config["Experiment"]["IdName"]
         target = config["Experiment"]["TargetValueName"]
+
         d1 = {}
         d2 = {}
         for index, object in y.iterrows():
             d1[int(object[id])] = object[target]
         for index, object in result.iterrows():
             d2[int(object[id])] = object[target]
+
         ys = []
         predicted = []
         for key in d1:
