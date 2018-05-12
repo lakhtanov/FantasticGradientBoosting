@@ -52,10 +52,10 @@ int main(int argc,  char** argv) {
   gb.Fit(data);
   auto res = gb.PredictProba(data);
   size_t index = 0;
-  for (auto el : res) {
+  /* for (auto el : res) {
     index++;
-    std::cout << el.first << " " << el.second << " " << data[index - 1].back().GetString() << std::endl;
-  }
+    std::cout << el.first << " " << el.second << " " << std::endl;
+  } */
   return 0;
 }
 
