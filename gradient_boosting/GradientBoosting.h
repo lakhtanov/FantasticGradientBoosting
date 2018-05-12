@@ -27,19 +27,33 @@ class GradientBoosting {
   void Fit(const gradient_boosting::internal_data_container::InternalDataContainer& data);
   std::unordered_map<std::string, double> PredictProba(
       const gradient_boosting::internal_data_container::InternalDataContainer& data) const;
-  std::pair<double, gradient_boosting::trees::GradientBoostingTreeOblivious> GetScoreAndTree(
+
+
+  std::vector<double> Predict(const gradient_boosting::trees::GradientBoostingTree& tree,
+                              const gradient_boosting::internal_data_container::InternalDataContainer& data,
+                              const std::vector<size_t>& objects) const;
+
+  double EvaluateTree(const gradient_boosting::trees::GradientBoostingTree& tree,
+                      const gradient_boosting::loss_functions::GradientBoostingLossFunction& loss_function,
+                      const gradient_boosting::internal_data_container::InternalDataContainer& data,
+                      const std::vector<size_t>& objects) const;
+  std::pair<double,
+      std::unique_ptr<gradient_boosting::trees::GradientBoostingTree>> GetScoreAndTree(
       const gradient_boosting::loss_functions::GradientBoostingLossFunction& loss_function,
       const gradient_boosting::internal_data_container::InternalDataContainer& data,
+      const std::vector<size_t>& all_object,
+      const std::vector<size_t>& all_features,
       const std::vector<double>& gradient);
   void UpdateGradient(std::vector<double>* gradient,
-                      const gradient_boosting::trees::GradientBoostingTreeOblivious &tree,
-                      const gradient_boosting::internal_data_container::InternalDataContainer& data) const;
+                      const gradient_boosting::trees::GradientBoostingTree& tree,
+                      const gradient_boosting::internal_data_container::InternalDataContainer& data,
+                      const std::vector<size_t>& objects) const;
 
   double learning_rate_;
   size_t number_of_trees_;
   gradient_boosting::config::GradientBoostingConfig config_;
   ctpl::thread_pool thread_pool_;
-  std::vector<gradient_boosting::trees::GradientBoostingTreeOblivious> forest_;
+  std::vector<std::unique_ptr<gradient_boosting::trees::GradientBoostingTree>> forest_;
   std::unique_ptr<gradient_boosting::data_transformer::DataTransformer > data_transformer_;
 };
 
