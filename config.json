@@ -15,9 +15,9 @@
         "IdName": "EventId",
         "ResultFile": "./experiments/higgs/result.csv",
         "TargetValueName": "Label",
-        "TestData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test.csv",
-        "TestDataLabels": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test_y.csv",
-        "TrainData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_train.csv"
+        "TestData": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_test.csv",
+        "TestDataLabels": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_test_y.csv",
+        "TrainData": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_train.csv"
     },
     "Verbose": "v1"
 }
