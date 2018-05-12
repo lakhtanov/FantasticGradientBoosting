@@ -1,8 +1,8 @@
 {
   "Verbose" : "v1",
   "BoostingConfig" : {
-    "NumberOfValueThresholds" : 32,
-    "NumberOfStatisticsThresholds" : 32,
+    "NumberOfValueThresholds" : 5,
+    "NumberOfStatisticsThresholds" : 5,
     "LossFunction" : "MSE",
     "TaskType" : "Classification",
     "NumberOfThreads" : 0,

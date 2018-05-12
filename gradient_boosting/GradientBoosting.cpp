@@ -139,8 +139,8 @@ pair<double, unique_ptr<GradientBoostingTree>> GradientBoosting::GetScoreAndTree
     const vector<size_t>& all_features,
     const vector<double>& gradient) {
 
-  // size_t min_number_of_object = std::min(1000Ul, data.GetNumberOfObject());
-  size_t min_number_of_object = data.GetNumberOfObject();
+  size_t min_number_of_object = std::min(10Ul, data.GetNumberOfObject());
+  // size_t min_number_of_object = data.GetNumberOfObject();
   // size_t sample_size = std::max(min_number_of_object,
   //                               size_t(sqrt(data.GetNumberOfObject())));
   size_t sample_size = data.GetNumberOfObject();
