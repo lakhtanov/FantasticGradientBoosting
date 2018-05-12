@@ -25,19 +25,28 @@ GradientBoostingTreeOblivious::GradientBoostingTreeOblivious(
   nodes_values_.resize((1 << (height_ + 1)) - 1);
 }
 
-pair<size_t, pair<double, vector<GradientBoostingSplitInfo>>>
+inline pair<size_t, pair<double, vector<GradientBoostingSplitInfo>>>
 GradientBoostingTreeOblivious::GetBestSplit(
     const vector<vector<size_t>>& features_objects,
     const vector<vector<size_t>>& objects_in_nodes,
     size_t train_feature) const {
   auto loss_function_ptr = loss_function_.Clone();
+  size_t num_feature_values = 0;
+  for (const auto& node : objects_in_nodes) {
+    for (size_t object : node) {
+      num_feature_values =
+          std::max(
+              num_feature_values,
+              features_objects[train_feature][object] + 1);
+    }
+  }
   vector<vector<GradientBoostingSplitInfo>> feature_nodes_split_infos(
-      features_objects[train_feature].size(),
+      num_feature_values,
       vector<GradientBoostingSplitInfo>(objects_in_nodes.size()));
   for (size_t node = 0; node < objects_in_nodes.size(); ++node) {
     loss_function_ptr->Configure(train_feature, objects_in_nodes[node]);
     for (size_t feature_split_value = 0;
-         feature_split_value < features_objects[train_feature].size();
+         feature_split_value < num_feature_values;
          ++feature_split_value) {
       feature_nodes_split_infos[feature_split_value][node] =
           loss_function_ptr->GetLoss(feature_split_value);
@@ -59,7 +68,7 @@ GradientBoostingTreeOblivious::GetBestSplit(
   double best_feature_split_value_loss = loss_lambda(best_feature_split_value);
 
   for (size_t feature_split_value = 1;
-       feature_split_value < features_objects[train_feature].size();
+       feature_split_value < num_feature_values;
        ++feature_split_value) {
     auto feature_split_value_loss = loss_lambda(feature_split_value);
     if (feature_split_value_loss < best_feature_split_value_loss) {
@@ -178,7 +187,7 @@ void GradientBoostingTreeOblivious::Fit(
   }
 }
 
-double GradientBoostingTreeOblivious::Predict(
+inline double GradientBoostingTreeOblivious::Predict(
     const vector<size_t>& test_object_features) const {
   size_t node_num = 0;
   for (size_t h = 0; h < height_; ++h) {
@@ -192,15 +201,15 @@ double GradientBoostingTreeOblivious::Predict(
   return nodes_values_[node_num];
 }
 
-size_t GradientBoostingTreeOblivious::GetLeftChildNum(size_t node_num) const {
+inline size_t GradientBoostingTreeOblivious::GetLeftChildNum(size_t node_num) const {
   return (node_num << 1) + 1;
 }
 
-size_t GradientBoostingTreeOblivious::GetRightChildNum(size_t node_num) const {
+inline size_t GradientBoostingTreeOblivious::GetRightChildNum(size_t node_num) const {
   return (node_num << 1) + 2;
 }
 
-vector<size_t> GradientBoostingTreeOblivious::GetLeftSplit(
+inline vector<size_t> GradientBoostingTreeOblivious::GetLeftSplit(
     const vector<vector<size_t>>& features_objects,
     size_t feature,
     size_t feature_split_value,
@@ -215,7 +224,7 @@ vector<size_t> GradientBoostingTreeOblivious::GetLeftSplit(
   return left_split;
 }
 
-vector<size_t> GradientBoostingTreeOblivious::GetRightSplit(
+inline vector<size_t> GradientBoostingTreeOblivious::GetRightSplit(
     const vector<vector<size_t>>& features_objects,
     size_t feature,
     size_t feature_split_value,

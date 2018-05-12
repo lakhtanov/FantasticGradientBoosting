@@ -29,11 +29,15 @@ void GradientBoostingMSELossFunction::Configure(
     const vector<size_t>& objects) {
   GradientBoostingLossFunction::Configure(feature, objects);
 
-  vector<double> feature_target_values(
-      features_objects_[feature].size(), 0.0);
-  vector<double> feature_target_square_values(
-      features_objects_[feature].size(), 0.0);
-  vector<size_t> objects_num(features_objects_[feature].size(), 0);
+  size_t num_feature_values = 0;
+  for (size_t object : objects) {
+    num_feature_values =
+        max(num_feature_values, objects_features_[object][feature] + 1);
+  }
+
+  vector<double> feature_target_values(num_feature_values, 0.0);
+  vector<double> feature_target_square_values(num_feature_values, 0.0);
+  vector<size_t> objects_num(num_feature_values, 0);
   for (size_t object : objects) {
     const size_t object_feature_value = objects_features_[object][feature];
     feature_target_values[object_feature_value] += target_values_[object];
@@ -49,7 +53,8 @@ void GradientBoostingMSELossFunction::Configure(
       objects_prefix_num_sum_.begin());
 
   target_values_prefix_squares_sum_.clear();
-  target_values_prefix_squares_sum_.resize(feature_target_values.size(), 0);
+  target_values_prefix_squares_sum_.resize(
+      feature_target_square_values.size(), 0);
   partial_sum(
       feature_target_square_values.begin(),
       feature_target_square_values.end(),
