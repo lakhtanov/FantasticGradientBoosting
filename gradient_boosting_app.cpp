@@ -55,7 +55,6 @@ int main(int argc,  char** argv) {
   utils::io::SimpleCSVReader test_reader(gb_config.GetTestData());
   const auto test_data = test_reader.ReadFile();
   auto res = gb.PredictProba(test_data);
-  size_t index = 0;
 
   utils::io::ResultDumper out(gb_config.GetResultFile(),
                               gb_config.GetIdValueName(),

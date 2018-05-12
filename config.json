@@ -5,8 +5,8 @@
     "NumberOfStatisticsThresholds" : 32,
     "LossFunction" : "MSE",
     "TaskType" : "Classification",
-    "NumberOfThreads" : 0,
-    "NumberOfTrees" : 2,
+    "NumberOfThreads" : 2,
+    "NumberOfTrees" : 150,
     "TreeHeight" : 6,
     "LearningRate" : 0.001,
     "TreeType" : "ObliviousTree"

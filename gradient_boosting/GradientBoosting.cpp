@@ -138,22 +138,25 @@ pair<double, unique_ptr<GradientBoostingTree>> GradientBoosting::GetScoreAndTree
     const vector<size_t>& all_object,
     const vector<size_t>& all_features,
     const vector<double>& gradient) {
-
-  size_t min_number_of_object = std::min(10Ul, data.GetNumberOfObject());
-  // size_t min_number_of_object = data.GetNumberOfObject();
-  // size_t sample_size = std::max(min_number_of_object,
-  //                               size_t(sqrt(data.GetNumberOfObject())));
-  size_t sample_size = data.GetNumberOfObject();
-
+  const size_t num_sample_object =
+      std::min(
+          size_t{200},
+          data.GetNumberOfObject());
+  const size_t num_sample_features =
+      std::min(
+          size_t{15},
+          data.GetNumberOfFeatures());
   pair<double, unique_ptr<GradientBoostingTree>> result;
   result.second = GetTree(config_, loss_function);
-  std::vector<size_t> objects = GetSample(all_object,
-                                          sample_size);
+  const std::vector<size_t> objects =
+      GetSample(all_object, num_sample_object);
+  const std::vector<size_t> features =
+      GetSample(all_features, num_sample_features);
   result.second->Fit(data.GetFeaturesObjects(),
                  data.GetObjectsFeatures(),
                  gradient,
                  objects,
-                 all_features,
+                 features,
                  thread_pool_);
   result.first = EvaluateTree(*result.second, loss_function, data, all_object);
   return result;
