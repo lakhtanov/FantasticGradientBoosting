@@ -30,7 +30,6 @@ GradientBoostingTreeOblivious::GetBestSplit(
     const vector<vector<size_t>>& features_objects,
     const vector<vector<size_t>>& objects_in_nodes,
     size_t train_feature) const {
-  // std::cout << "GradientBoostingTreeeOblivious::GetBestSplit train_feature = " << train_feature << std::endl;
   auto loss_function_ptr = loss_function_.Clone();
   vector<vector<GradientBoostingSplitInfo>> feature_nodes_split_infos(
       features_objects[train_feature].size(),
@@ -68,7 +67,6 @@ GradientBoostingTreeOblivious::GetBestSplit(
       best_feature_split_value_loss = feature_split_value_loss;
     }
   }
-  // std::cout << "GradientBoostingTreeeOblivious::GetBestSplit loss " << best_feature_split_value_loss << std::endl;
 
   return {
     best_feature_split_value,
@@ -81,32 +79,21 @@ GradientBoostingTreeOblivious::GetBestSplit(
 
 void GradientBoostingTreeOblivious::Fit(
     const vector<vector<size_t>>& features_objects,
-    const vector<vector<size_t>>& objects_features,
-    const vector<double>& target_values,
+    const vector<vector<size_t>>&,
+    const vector<double>&,
     const vector<size_t>& train_objects,
     const vector<size_t>& train_features,
     ctpl::thread_pool& thread_pool) {
-  // std::cout << "GradientBoostingTreeOblivious::Fit" << std::endl;
-
   vector<vector<size_t>> objects_in_nodes{{train_objects}};
 
   const size_t num_threads = thread_pool.size();
-  // std::cout << "GradientBoostingTreeOblivious::Fit num_threads " << num_threads << std::endl;
   for (size_t height = 0; height < height_; ++height) {
-    // std::cout << "GradientBoostingTreeOblivious::Fit height " << height << std::endl;
     vector<
         pair<size_t, pair<double, vector<GradientBoostingSplitInfo>>>
     > features_best_splits(train_features.size());
     vector<std::future<
         pair<size_t, pair<double, vector<GradientBoostingSplitInfo>>>
     >> features_best_splits_futures(train_features.size());
-
-    /* std::cout << "train_features" << std::endl;
-    for (size_t train_feature_num = 0;
-         train_feature_num < train_features.size();
-         ++train_feature_num) {
-      std::cout << "train feature = " << train_features[train_feature_num] << std::endl;
-    } */
 
     for (size_t train_feature_num = 0;
          train_feature_num < train_features.size();
@@ -160,8 +147,6 @@ void GradientBoostingTreeOblivious::Fit(
       }
     }
 
-    // std::cout << "GradientBoostingTreeOblivious::Fit height = " << height << " loss = " << features_best_splits[best_feature].second.first << std::endl;
-
     features_[height] = train_features[best_feature];
     features_split_values_[height] = features_best_splits[best_feature].first;
     const size_t first_height_num = (1 << height) - 1;
@@ -191,16 +176,10 @@ void GradientBoostingTreeOblivious::Fit(
     }
     swap(objects_in_nodes, objects_in_nodes_next_level);
   }
-
-  std::cout << "GradientBoostingTreeOblivious::Fit learned tree" << std::endl;
-  for (size_t height = 0; height < height_; ++height) {
-    std::cout << "height: " << height << " feature: " << features_[height] << " features_split_values: " << features_split_values_[height] << std::endl;
-  }
 }
 
 double GradientBoostingTreeOblivious::Predict(
     const vector<size_t>& test_object_features) const {
-  // std::cout << "GradientBoostingTreeOblivious::Predict" << std::endl;
   size_t node_num = 0;
   for (size_t h = 0; h < height_; ++h) {
     if (test_object_features[features_[h]] <= features_split_values_[h]) {
@@ -209,7 +188,6 @@ double GradientBoostingTreeOblivious::Predict(
       node_num = GetRightChildNum(node_num);
     }
   }
-  // std::cout << "GradientBoostingTreeOblivious::Predict predicted " << nodes_values_[node_num] << std::endl;
 
   return nodes_values_[node_num];
 }

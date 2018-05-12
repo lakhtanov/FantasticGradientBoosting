@@ -1,6 +1,6 @@
-#include "utils/data_containers/DataContainer.h"
-
 #include <cassert>
+
+#include "utils/data_containers/DataContainer.h"
 
 namespace utils {
 namespace data_containers {
@@ -9,12 +9,11 @@ using std::string;
 using std::vector;
 
 DataContainer::DataContainer(const vector<vector<string>> &table)
-    : DataContainer(vector<string>(table.front().size()), table)
-{
+    : DataContainer(vector<string>(table.front().size()), table) {
 }
 
-DataContainer::DataContainer(const vector<string> &names,
-                             const vector<vector<string>> &table)
+DataContainer::DataContainer(
+    const vector<string> &names, const vector<vector<string>> &table)
     : names_(names)
     , rows_(table.size())
     , columns_(names.size())

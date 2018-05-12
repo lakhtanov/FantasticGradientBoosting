@@ -16,18 +16,13 @@ GradientBoostingTree::GradientBoostingTree(
 double GradientBoostingTree::Predict(
     const vector<vector<size_t>>& objects_features,
     size_t test_object) const {
-  std::cout << "GradientBoostingTree::Predict for object #" << test_object << std::endl;
-  double prediction = Predict(objects_features[test_object]);
-  std::cout << "GradientBoostingTree::Predict for object #" << test_object << " prediction: " << prediction << std::endl;
-  return prediction;
+  return Predict(objects_features[test_object]);
 }
 
 vector<double> GradientBoostingTree::Predict(
     const vector<std::vector<size_t>>& objects_features,
     const vector<size_t>& test_objects,
     ctpl::thread_pool& thread_pool) const {
-  std::cout << "GradientBoostingTree::Predict" << std::endl;
-
   vector<double> predictions(test_objects.size());
   vector<std::future<double>> predictions_futures(test_objects.size());
 

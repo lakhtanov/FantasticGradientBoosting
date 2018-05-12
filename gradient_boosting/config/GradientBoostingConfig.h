@@ -27,12 +27,13 @@ class GradientBoostingConfig {
   size_t GetNumberOfThreads() const;
   size_t GetNumberOfTrees() const;
   size_t GetHeight() const;
-  std::string GetIdValueName () const;
+  std::string GetIdValueName() const;
   double GetLearningRate() const;
   TreeType GetTreeType() const;
 
   std::string GetTestData() const;
   std::string GetResultFile() const;
+
  private:
   std::unordered_map<std::string, Verbose> GetVerboseMapping() const;
   std::unordered_map<std::string, LossFunction> GetLossFunctionMapping() const;

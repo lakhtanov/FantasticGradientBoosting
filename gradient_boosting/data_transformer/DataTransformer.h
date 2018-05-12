@@ -1,5 +1,5 @@
-#ifndef GRADIENT_BOOSTING_DATA_TRANSFORMATOR_DATATRANSFORMER_H_
-#define GRADIENT_BOOSTING_DATA_TRANSFORMATOR_DATATRANSFORMER_H_
+#ifndef GRADIENT_BOOSTING_DATA_TRANSFORMER_DATATRANSFORMER_H_
+#define GRADIENT_BOOSTING_DATA_TRANSFORMER_DATATRANSFORMER_H_
 
 #include <memory>
 #include <string>
@@ -23,8 +23,8 @@ class DataTransformer {
   explicit DataTransformer(
       const gradient_boosting::config::GradientBoostingConfig& config);
 
-  gradient_boosting::internal_data_container::InternalDataContainer FitAndTransform(
-      const utils::data_containers::DataContainer& data);
+  gradient_boosting::internal_data_container::InternalDataContainer
+      FitAndTransform(const utils::data_containers::DataContainer& data);
 
   void Fit(const utils::data_containers::DataContainer& data);
 
@@ -59,10 +59,17 @@ class DataTransformer {
       size_t index,
       const std::vector<double>& features) const;
 
-  std::unordered_map<size_t, gradient_boosting::binarization::ThresholdContainer> containers_;
-  std::unordered_map<size_t, gradient_boosting::categories::CategoricalConverter> converters_;
-  std::vector<std::unique_ptr<gradient_boosting::binarization::ThresholdCreator>> creators_;
-  std::unique_ptr<gradient_boosting::categories::CategoricalContainer> target_values_converter_;
+  std::unordered_map<
+      size_t,
+      gradient_boosting::binarization::ThresholdContainer> containers_;
+  std::unordered_map<
+      size_t,
+      gradient_boosting::categories::CategoricalConverter> converters_;
+  std::vector<
+      std::unique_ptr<gradient_boosting::binarization::ThresholdCreator>>
+      creators_;
+  std::unique_ptr<gradient_boosting::categories::CategoricalContainer>
+      target_values_converter_;
   std::unordered_map<size_t, std::string> target_value_to_name_;
   const std::string target_value_name_;
   const std::string id_value_name_;
@@ -72,5 +79,5 @@ class DataTransformer {
 }  // namespace data_transformer
 }  // namespace gradient_boosting
 
-#endif  // GRADIENT_BOOSTING_DATA_TRANSFORMATOR_DATATRANSFORMER_H_
+#endif  // GRADIENT_BOOSTING_DATA_TRANSFORMER_DATATRANSFORMER_H_
 
