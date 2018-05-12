@@ -221,7 +221,19 @@ unordered_map<string, double> GradientBoosting::PredictProba(
 
 unordered_map<string, string> GradientBoosting::PredictClassName(
     const utils::data_containers::DataContainer& data) const {
-  return {}; // ? do we need this?
+  auto predicted_probs = PredictProba(data);
+  unordered_map<string, string> result;
+  assert(!data_transformer_->GetTargetNames().empty());
+  for (const auto& id_proba : predicted_probs) {
+    size_t best_id = data_transformer_->GetTargetNames().begin()->first;
+    for (const auto& el : data_transformer_->GetTargetNames()) {
+      if (abs(best_id - id_proba.second) > abs(el.first - id_proba.second)) {
+        best_id = el.first;
+      }
+    }
+    result[id_proba.first] = data_transformer_->GetTargetNames().at(best_id);
+  }
+  return result;
 };
 
 

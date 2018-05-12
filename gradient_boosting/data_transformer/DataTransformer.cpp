@@ -44,6 +44,9 @@ InternalDataContainer DataTransformer::FitAndTransform(const DataContainer& data
 void DataTransformer::Fit(const DataContainer& data) {
   containers_.clear();
   converters_.clear();
+  target_values_converter_ = nullptr;
+  target_value_to_name_.clear();
+
   assert(task_type_ == GradientBoostingConfig::TaskType::Classification);
   const auto res = FindTargetValueIndex(data, target_value_name_);
   assert(res.first);
@@ -86,6 +89,13 @@ void DataTransformer::FitTargetValue(const DataContainer& data,
   target_values_converter_ =
       std::make_unique<gradient_boosting::categories::CategoricalContainer>(
           categorical_buffer);
+  for (size_t index = 0; index < data.rows(); ++index) {
+    const auto& name = data[index][target_value_index].GetString();
+    auto result = target_values_converter_->GetId(name);
+    assert(result.first);
+    target_value_to_name_[result.second] = name;
+  }
+
 }
 
 std::pair<bool, size_t> DataTransformer::FindTargetValueIndex(
@@ -146,6 +156,10 @@ void DataTransformer::FitNumerical(size_t index,
                                    const vector<double>& features) {
   containers_.insert({index, ThresholdContainer(creators_, features)});
 }
+
+const std::unordered_map<size_t, std::string>& DataTransformer::GetTargetNames() const {
+  return target_value_to_name_;
+};
 
 InternalDataContainer DataTransformer::Transform(const DataContainer& data) const {
   vector<vector<size_t>> feature_object;
