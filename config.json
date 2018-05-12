@@ -4,7 +4,7 @@
         "LossFunction": "MSE",
         "NumberOfStatisticsThresholds": 32,
         "NumberOfThreads": 0,
-        "NumberOfTrees": 2,
+        "NumberOfTrees": 100,
         "NumberOfValueThresholds": 32,
         "TaskType": "Classification",
         "TreeHeight": 6,
@@ -16,6 +16,7 @@
         "ResultFile": "./experiments/higgs/result.csv",
         "TargetValueName": "Label",
         "TestData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test.csv",
+        "TestDataLabels": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_test_y.csv",
         "TrainData": "/Users/roman/github/FantasticGradientBoosting/experiments/higgs/sliced_train.csv"
     },
     "Verbose": "v1"

@@ -26,6 +26,10 @@ def main():
         print (test, config_path)
         config["Experiment"]["TrainData"] = train
         config["Experiment"]["TestData"] = test
+        config["Experiment"]["TestDataLabels"] = test_y
+        os.system("rm " + test_y)
+        os.system("rm " + test)
+        os.system("rm " + train)
         X_train.to_csv(train, header=True, index=None, sep=',', float_format='%.3f')
         X_test.to_csv(test, header=True, index=None, sep=',', float_format='%.3f')
         y_test.to_csv(test_y, header=True, index=None, sep=',', mode='a')
@@ -51,9 +55,6 @@ def change_targets(df, name):
             names[el] = idx
             idx += 1
         df.at[index, name] = names[el]
-
-
-
 
 
 if __name__ == "__main__":
