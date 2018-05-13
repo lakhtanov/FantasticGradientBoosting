@@ -1,10 +1,10 @@
 {
     "BoostingConfig": {
-        "LearningRate": 1e-05,
+        "LearningRate": 0.01,
         "LossFunction": "MSE",
         "NumberOfStatisticsThresholds": 32,
-        "NumberOfThreads": 4,
-        "NumberOfTrees": 2000,
+        "NumberOfThreads": 1,
+        "NumberOfTrees": 200,
         "NumberOfValueThresholds": 32,
         "TaskType": "Classification",
         "TreeHeight": 6,
@@ -20,5 +20,5 @@
         "TestDataLabels": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_test_y.csv",
         "TrainData": "/Users/lakhtanov/YSDA/Semester4/BigData2/FantasticGradientBoosting/experiments/higgs/sliced_train.csv"
     },
-    "Verbose": "v1"
+    "Verbose": "v2"
 }

@@ -42,6 +42,13 @@ class GradientBoosting {
       data,
       const std::vector<size_t>& objects);
 
+  double EvaluateLoss(
+      const gradient_boosting::loss_functions::GradientBoostingLossFunction&
+      loss_function,
+      const std::vector<double>& predicted_targets,
+      const std::vector<double>& targets,
+      const std::vector<size_t>& objects);
+
   double EvaluateTree(
       const gradient_boosting::trees::GradientBoostingTree& tree,
       const gradient_boosting::loss_functions::GradientBoostingLossFunction&
@@ -70,6 +77,13 @@ class GradientBoosting {
       data,
       const std::vector<size_t>& objects);
 
+  void UpdatePrediction(
+      std::vector<double>* gradient,
+      const gradient_boosting::trees::GradientBoostingTree& tree,
+      const gradient_boosting::internal_data_container::InternalDataContainer&
+      data,
+      const std::vector<size_t>& objects);
+
   double learning_rate_;
   size_t number_of_trees_;
   gradient_boosting::config::GradientBoostingConfig config_;
@@ -80,6 +94,7 @@ class GradientBoosting {
       data_transformer_;
   double fit_time_;
   double update_gradient_time_;
+  double update_prediction_time_;
   double evaluate_time_;
   double build_tree_time_;
   double clear_build_tree_time_;
