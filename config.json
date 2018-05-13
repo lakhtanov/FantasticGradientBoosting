@@ -1,6 +1,6 @@
 {
     "BoostingConfig": {
-        "LearningRate": 0.001,
+        "LearningRate": 1e-05,
         "LossFunction": "MSE",
         "NumberOfStatisticsThresholds": 32,
         "NumberOfThreads": 4,

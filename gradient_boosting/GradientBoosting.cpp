@@ -188,14 +188,16 @@ GradientBoosting::GetScoreAndTree(
     const vector<size_t>& all_features,
     const vector<double>& gradient) {
   clock_t begin = clock();
-  const size_t num_sample_object =
+  /* const size_t num_sample_object =
       std::min(
-          size_t{200},
-          data.GetNumberOfObject());
-  const size_t num_sample_features =
+          size_t{2000},
+          data.GetNumberOfObject()); */
+  const size_t num_sample_object = data.GetNumberOfObject();
+  /* const size_t num_sample_features =
       std::min(
-          size_t{15},
-          data.GetNumberOfFeatures());
+          size_t{20},
+          data.GetNumberOfFeatures()); */
+  const size_t num_sample_features = data.GetNumberOfFeatures();
   pair<double, unique_ptr<GradientBoostingTree>> result;
   GradientBoostingMSELossFunction loss_function_gradient(
       data.GetFeaturesObjects(),
@@ -292,29 +294,41 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
   size_t number_of_trees_per_tree = 1;
 
   for (size_t index_tree = 0; index_tree < number_of_trees_; ++index_tree) {
-    vector<pair<double, unique_ptr<GradientBoostingTree>>> trees_to_chose;
+    vector<pair<double, unique_ptr<GradientBoostingTree>>> trees_to_choose;
     size_t best_index = 0;
     for (size_t t = 0; t < number_of_trees_per_tree; ++t) {
-      trees_to_chose.emplace_back(
+      trees_to_choose.emplace_back(
           GetScoreAndTree(
               *ptr_loss_function,
               data,
               all_objects,
               all_features,
               gradient));
-      if (trees_to_chose[t].first < trees_to_chose[best_index].first) {
+      if (trees_to_choose[t].first < trees_to_choose[best_index].first) {
         best_index = t;
       }
     }
+
+    if (config_.GetVerbose() == GradientBoostingConfig::Verbose::v1) {
+      std::cout.precision(3);
+      std::cout << "Tree #" << index_tree + 1 << ": loss = " << std::fixed
+          << trees_to_choose[best_index].first << std::endl;
+    }
+
     UpdateGradient(
-        &gradient, *trees_to_chose[best_index].second, data, all_objects);
-    forest_.emplace_back(std::move(trees_to_chose[best_index].second));
+        &gradient, *trees_to_choose[best_index].second, data, all_objects);
+    forest_.emplace_back(std::move(trees_to_choose[best_index].second));
+
   }
   clock_t end = clock();
   fit_time_ += double(end - begin) / CLOCKS_PER_SEC;
-  std::cout.precision(3);
-  std::cout << std::fixed << fit_time_ << " " << update_gradient_time_ << " " << build_tree_time_
-            << " " << evaluate_time_ << " " << clear_build_tree_time_ << std::endl;
+  
+  if (config_.GetVerbose() == GradientBoostingConfig::Verbose::v2) {
+    std::cout.precision(3);
+    std::cout << std::fixed << fit_time_ << " " << update_gradient_time_ << " "
+        << build_tree_time_ << " " << evaluate_time_ << " "
+        << clear_build_tree_time_ << std::endl;
+  }
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
