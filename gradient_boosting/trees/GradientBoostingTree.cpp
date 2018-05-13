@@ -24,40 +24,48 @@ vector<double> GradientBoostingTree::Predict(
     const vector<size_t>& test_objects,
     ctpl::thread_pool& thread_pool) const {
   vector<double> predictions(test_objects.size());
-  vector<std::future<double>> predictions_futures(test_objects.size());
+
+  auto predict_lambda =
+      [
+        this,
+        &objects_features,
+        &test_objects,
+        &predictions
+      ](size_t, size_t start_index, size_t finish_index) {
+        for (size_t local_index = start_index;
+             local_index < finish_index;
+             ++local_index) {
+          predictions[local_index] =
+              this->Predict(
+                  objects_features,
+                  test_objects[local_index]);
+        }
+      };
 
   const size_t num_threads = thread_pool.size();
-  for (size_t test_object_num = 0;
+  const size_t task_size = test_objects.size() / (num_threads + 1);
+  vector<std::future<void>> prediction_tasks;
+  for (size_t test_object_num = task_size;
        test_object_num < test_objects.size();
-       ++test_object_num) {
-    if (test_object_num % (num_threads + 1) == 0) {  // run in current thread
-      continue;
-    }
-    predictions_futures[test_object_num] =
+       test_object_num += task_size) {
+    prediction_tasks.push_back(
         thread_pool.push(
-            [&](int) {
-              return Predict(
-                  objects_features,
-                  test_objects[test_object_num]);
-            });
+            predict_lambda,
+            test_object_num,
+            std::min(test_object_num + task_size, test_objects.size())));
   }
 
   for (size_t test_object_num = 0;
-       test_object_num < test_objects.size();
-       test_object_num += num_threads + 1) {
+       test_object_num < task_size;
+       ++test_object_num) {
     predictions[test_object_num] =
         Predict(
             objects_features,
             test_objects[test_object_num]);
   }
 
-  for (size_t test_object_num = 0;
-       test_object_num < test_objects.size();
-       ++test_object_num) {
-    if (test_object_num % (num_threads + 1) == 0) {
-      continue;
-    }
-    predictions[test_object_num] = predictions_futures[test_object_num].get();
+  for (auto& prediction_task : prediction_tasks) {
+    prediction_task.get();
   }
 
   return predictions;

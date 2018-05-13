@@ -39,7 +39,7 @@ GradientBoosting::GradientBoosting(
     : learning_rate_(config.GetLearningRate())
     , number_of_trees_(config.GetNumberOfTrees())
     , config_(config)
-    , thread_pool_(config.GetNumberOfThreads())
+    , thread_pool_(config.GetNumberOfThreads() - 1)
     , fit_time_(0.0)
     , update_gradient_time_(0)
     , evaluate_time_(0)
@@ -117,12 +117,13 @@ unique_ptr<GradientBoostingTree> GetTree(
 vector<double> GradientBoosting::Predict(
     const GradientBoostingTree &tree,
     const InternalDataContainer& data,
-    const vector<size_t>& objects) const {
-  std::vector<double> result;
-  result.reserve(objects.size());
+    const vector<size_t>& objects) {
+  vector<double> result =
+      tree.Predict(data.GetObjectsFeatures(), objects, thread_pool_);
+  /* result.reserve(objects.size());
   for (auto object : objects) {
     result.push_back(tree.Predict(data.GetObjectsFeatures()[object]));
-  }
+  } */
   return result;
 }
 
@@ -130,15 +131,49 @@ double GradientBoosting::EvaluateTree(
     const GradientBoostingTree& tree,
     const GradientBoostingLossFunction& loss_function,
     const InternalDataContainer& data,
+    const vector<double>& gradient,
     const vector<size_t>& objects) {
   clock_t begin = clock();
   const auto predicted_targets = Predict(tree, data, objects);
-  double sum = 0.0;
-  for (size_t index = 0; index < objects.size(); ++index) {
-    sum =
-        loss_function.GetLoss(
-            predicted_targets[index], data.GetTargetValues()[objects[index]]);
+
+  auto get_loss =
+      [
+        &loss_function,
+        &predicted_targets,
+        &gradient,
+        &objects
+      ](size_t, size_t start_index, size_t finish_index) {
+        double local_sum = 0;
+        for (size_t local_index = start_index;
+             local_index < finish_index;
+             ++local_index) {
+          local_sum +=
+              loss_function.GetLoss(
+                  predicted_targets[local_index],
+                  gradient[objects[local_index]]);
+        }
+
+        return local_sum;
+      };
+  const size_t num_threads = thread_pool_.size();
+  const size_t task_size = objects.size() / (num_threads + 1);
+  vector<std::future<double>> local_sums;
+  for (size_t index = task_size; index < objects.size(); index += task_size) {
+    local_sums.push_back(
+        thread_pool_.push(
+            get_loss, index, std::min(index + task_size, objects.size())));
   }
+  
+  double sum = 0;
+  for (size_t index = 0; index < task_size; ++index) {
+    sum += loss_function.GetLoss(
+        predicted_targets[index], gradient[objects[index]]);
+  }
+
+  for (auto& local_sum : local_sums) {
+    sum += local_sum.get();
+  }
+
   clock_t end = clock();
   evaluate_time_ += double(end - begin) / CLOCKS_PER_SEC;
   return sum;
@@ -178,8 +213,13 @@ GradientBoosting::GetScoreAndTree(
       features,
       thread_pool_);
   clear_build_tree_time_ +=  double(clock() - begin_clear) / CLOCKS_PER_SEC;
-  result.first = EvaluateTree(*result.second, loss_function, data, all_object);
-  // result.first = EvaluateTree(*result.second, loss_function_gradient, data, all_object);
+  result.first =
+      EvaluateTree(
+          *result.second,
+          loss_function_gradient,
+          data,
+          gradient,
+          all_object);
   clock_t end = clock();
   build_tree_time_ += double(end - begin) / CLOCKS_PER_SEC;
   return result;
@@ -192,9 +232,41 @@ void GradientBoosting::UpdateGradient(
     const vector<size_t>& objects) {
   clock_t begin = clock();
   const auto prediction = Predict(tree, data, objects);
-  for (size_t index = 0; index < objects.size(); ++index) {
+
+  auto update_gradient_lambda =
+      [
+        this,
+        gradient,
+        &objects,
+        &prediction
+      ](size_t, size_t start_index, size_t finish_index) {
+        for (size_t index = start_index;
+             index < finish_index;
+             ++index) {
+          (*gradient)[objects[index]] -=
+              this->learning_rate_ * prediction[index];
+        }
+      };
+  
+  const size_t num_threads = thread_pool_.size();
+  const size_t task_size = objects.size() / (num_threads + 1);
+  vector<std::future<void>> tasks;
+  for (size_t index = task_size; index < objects.size(); index += task_size) {
+    tasks.push_back(
+        thread_pool_.push(
+            update_gradient_lambda,
+            index,
+            std::min(index + task_size, objects.size())));
+  }
+
+  for (size_t index = 0; index < task_size; ++index) {
     (*gradient)[objects[index]] -= learning_rate_ * prediction[index];
   }
+
+  for (auto& task : tasks) {
+    task.get();
+  }
+
   clock_t end = clock();
   update_gradient_time_ += double(end - begin) / CLOCKS_PER_SEC;
 }
@@ -246,13 +318,13 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
-    const DataContainer& data) const {
+    const DataContainer& data) {
   const auto transformed_data = data_transformer_->Transform(data);
   return PredictProba(transformed_data);
 }
 
 unordered_map<string, double> GradientBoosting::PredictProba(
-    const InternalDataContainer& data) const {
+    const InternalDataContainer& data) {
   vector<double>accumulate(data.GetNumberOfObject());
   const vector<size_t> all_objects =
       GetNumberedVector(data.GetNumberOfObject());
@@ -271,7 +343,7 @@ unordered_map<string, double> GradientBoosting::PredictProba(
 }
 
 unordered_map<string, string> GradientBoosting::PredictClassName(
-    const DataContainer& data) const {
+    const DataContainer& data) {
   const auto predicted_probs = PredictProba(data);
   unordered_map<string, string> result;
   assert(!data_transformer_->GetTargetNames().empty());
