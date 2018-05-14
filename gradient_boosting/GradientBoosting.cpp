@@ -202,16 +202,16 @@ GradientBoosting::GetScoreAndTree(
     const vector<size_t>& all_features,
     const vector<double>& gradient) {
   clock_t begin = clock();
-  /* const size_t num_sample_object =
+  const size_t num_sample_object =
       std::min(
           size_t{2000},
-          data.GetNumberOfObject()); */
-  const size_t num_sample_object = data.GetNumberOfObject();
-  /* const size_t num_sample_features =
+          data.GetNumberOfObject());
+  //const size_t num_sample_object = data.GetNumberOfObject();
+  const size_t num_sample_features =
       std::min(
           size_t{20},
-          data.GetNumberOfFeatures()); */
-  const size_t num_sample_features = data.GetNumberOfFeatures();
+          data.GetNumberOfFeatures());
+  //const size_t num_sample_features = data.GetNumberOfFeatures();
   pair<double, unique_ptr<GradientBoostingTree>> result;
   GradientBoostingMSELossFunction loss_function_gradient(
       data.GetFeaturesObjects(),
@@ -371,13 +371,12 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
 
     UpdateGradient(
         &gradient, *trees_to_choose[best_index].second, data, all_objects);
+    forest_.emplace_back(std::move(trees_to_choose[best_index].second));
     UpdatePrediction(
         &prediction,
-        *trees_to_choose[best_index].second, 
+        *forest_.back(),
         data,
         all_objects);
-    forest_.emplace_back(std::move(trees_to_choose[best_index].second));
-
     if (config_.GetVerbose() == GradientBoostingConfig::Verbose::v2) {
       const double loss =
           EvaluateLoss(
@@ -388,7 +387,7 @@ void GradientBoosting::Fit(const InternalDataContainer & data) {
 
       std::cout.precision(3);
       std::cout << "Tree #" << index_tree + 1 << ": loss = " << std::fixed
-          << loss << std::endl;
+                << loss << std::endl;
     }
   }
   clock_t end = clock();
